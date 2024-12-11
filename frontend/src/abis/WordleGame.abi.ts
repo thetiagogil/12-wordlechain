@@ -1,7 +1,7 @@
 export const WordleGameABI = [
   {
     type: "constructor",
-    inputs: [{ name: "_token", type: "address", internalType: "contract WordleToken" }],
+    inputs: [{ name: "_token", type: "address", internalType: "address" }],
     stateMutability: "nonpayable"
   },
   {
@@ -29,7 +29,7 @@ export const WordleGameABI = [
     type: "function",
     name: "token",
     inputs: [],
-    outputs: [{ name: "", type: "address", internalType: "contract WordleToken" }],
+    outputs: [{ name: "", type: "address", internalType: "address" }],
     stateMutability: "view"
   },
   {

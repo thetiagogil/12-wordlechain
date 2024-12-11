@@ -1,6 +1,7 @@
 import { Box, Button, Grid, Stack } from "@mui/joy";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useReadGameGuess } from "../hooks/useReadGameGuess";
+import { useWaitForGameContract } from "../hooks/useWaitForGameContract";
 import { useWriteGameContract } from "../hooks/useWriteGameContract";
 
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -9,7 +10,8 @@ export const GameBoard = () => {
   const [word, setWord] = useState<string>("");
   const guess = word.toUpperCase();
 
-  const { makeGuess, isPending } = useWriteGameContract();
+  const { makeGuess, isPending, contractHash } = useWriteGameContract();
+  const { hasWaited } = useWaitForGameContract(contractHash);
   const { readGuess } = useReadGameGuess(guess);
 
   const handleLetterClick = (letter: string) => {
@@ -25,11 +27,16 @@ export const GameBoard = () => {
       makeGuess(guess);
     } catch (err: any) {
       console.error(err);
-    } finally {
-      console.log(readGuess);
-      setWord("");
     }
   };
+
+  useEffect(() => {
+    if (hasWaited) {
+      console.log("Has waited?: " + hasWaited);
+      console.log("The guess was: " + guess);
+      console.log("Was it correct?: " + readGuess);
+    }
+  }, [hasWaited]);
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
