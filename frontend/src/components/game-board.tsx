@@ -36,6 +36,14 @@ export const GameBoard = () => {
     }
   }, [hasWaitedForGuess]);
 
+  useEffect(() => {
+    if (hasWaitedForGuess) {
+      console.log("Has waited?: " + hasWaitedForGuess);
+      console.log("The guess was: " + guess);
+      console.log("Was it correct?: " + hasWaitedForGuess);
+    }
+  }, [hasWaitedForGuess]);
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
       {/* Submit Approve Tokens Button */}

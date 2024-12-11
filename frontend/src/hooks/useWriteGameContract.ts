@@ -3,9 +3,9 @@ import { WordleGameABI } from "../abis/WordleGame.abi";
 import { WORDLE_GAME_ADDRESS } from "../config/constants";
 
 export const useWriteGameContract = () => {
-  const { writeContract, isPending } = useWriteContract();
+  const { writeContract, isPending, data: contractHash } = useWriteContract();
 
-  const makeGuess = (guess: string) => {
+  const makeGuess = async (guess: string) => {
     writeContract({
       address: WORDLE_GAME_ADDRESS,
       abi: WordleGameABI,
@@ -14,12 +14,5 @@ export const useWriteGameContract = () => {
     });
   };
 
-  return { makeGuess, isPending };
+  return { makeGuess, isPending, contractHash };
 };
-
-/*   const result = useSimulateContract({
-    address: GAME_ADDRESS,
-    abi: WordleGameABI,
-    functionName: "guess",
-    args: [word.toUpperCase()]
-  }); */
