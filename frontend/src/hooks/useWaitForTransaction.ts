@@ -1,4 +1,4 @@
-/* import { useWaitForTransactionReceipt } from "wagmi";
+import { useWaitForTransactionReceipt } from "wagmi";
 
 export const useWaitForTransaction = (hash: `0x${string}` | undefined) => {
   const { isSuccess: hasWaited } = useWaitForTransactionReceipt({
@@ -7,4 +7,3 @@ export const useWaitForTransaction = (hash: `0x${string}` | undefined) => {
 
   return { hasWaited };
 };
- */
