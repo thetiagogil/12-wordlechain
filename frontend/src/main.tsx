@@ -11,7 +11,7 @@ import { http, WagmiProvider } from "wagmi";
 import { anvil, sepolia } from "wagmi/chains";
 import { PUBLIC_PROJECT_ID, RPC_URL } from "./config/constants";
 
-const config = getDefaultConfig({
+const rainbowkitConfig = getDefaultConfig({
   appName: "Wordle",
   projectId: PUBLIC_PROJECT_ID,
   chains: [sepolia, anvil],
@@ -24,7 +24,7 @@ const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <WagmiProvider config={config}>
+    <WagmiProvider config={rainbowkitConfig}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
           <CssVarsProvider>
