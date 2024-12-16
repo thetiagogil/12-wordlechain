@@ -15,10 +15,10 @@ export const GameBoard = () => {
     handleApproveTokens,
     handleCheckAllowance,
     hasWaitedForAllowance,
-    allowanceObj,
+    allowance,
     isLoading: isLoadingToken
   } = useTokenContract();
-  const { handleSubmitGuess, hasWaitedForGuess, guessObj, isLoading: isLoadingGame } = useGameContract({ guess });
+  const { handleSubmitGuess, hasWaitedForGuess, isGuessCorrect, isLoading: isLoadingGame } = useGameContract({ guess });
 
   // Game Logic
   const handleLetterClick = (letter: string) => {
@@ -32,14 +32,13 @@ export const GameBoard = () => {
   // Use Effects
   useEffect(() => {
     if (hasWaitedForAllowance && isLoadingToken === false) {
-      toast.info(`Your allowance is: ${allowanceObj.data} TKN.`, { closeOnClick: true });
+      toast.info(`Your allowance is: ${allowance} TKN.`, { closeOnClick: true });
     }
   }, [hasWaitedForAllowance, isLoadingToken]);
 
   useEffect(() => {
     if (hasWaitedForGuess && isLoadingGame === false) {
-      const data = guessObj.data;
-      if (data === true) {
+      if (isGuessCorrect) {
         toast.success(`Your guess was correct!!`, { closeOnClick: true });
       } else {
         toast.error(`Your guess was incorrect...`, { closeOnClick: true });
@@ -58,6 +57,7 @@ export const GameBoard = () => {
           onClick={handleApproveTokens}
           color="success"
           loading={isLoadingToken || isLoadingGame}
+          disabled={allowance > 0}
         >
           Approve Tokens
         </Button>
@@ -117,7 +117,7 @@ export const GameBoard = () => {
           <Button
             size="lg"
             fullWidth
-            onClick={handleSubmitGuess}
+            onClick={() => handleSubmitGuess(allowance)}
             color="success"
             disabled={guess.length < 5}
             loading={isLoadingGame}

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { WordleTokenABI } from "../abis/WordleToken.abi";
-import { WORDLE_GAME_ADDRESS, WORDLE_TOKEN_ADDRESS } from "../config/constants";
+import { TOKEN_DECIMALS, WORDLE_GAME_ADDRESS, WORDLE_TOKEN_ADDRESS } from "../config/constants";
 
 export const useTokenContract = () => {
   // States
@@ -45,16 +45,18 @@ export const useTokenContract = () => {
     args: [userAddress, WORDLE_GAME_ADDRESS]
   });
 
+  const allowance = allowanceObj?.data ? Number(allowanceObj.data) / 10 ** TOKEN_DECIMALS : 0;
+
   // Handle Check Allowance Button
   const handleCheckAllowance = async () => {
-    toast.info(`Your allowance is: ${allowanceObj.data} TKN.`, { closeOnClick: true });
+    toast.info(`Your allowance is: ${allowance} TKN.`, { closeOnClick: true });
   };
 
   return {
     handleApproveTokens,
     handleCheckAllowance,
     hasWaitedForAllowance,
-    allowanceObj,
+    allowance,
     isLoading
   };
 };
