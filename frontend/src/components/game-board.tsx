@@ -1,5 +1,6 @@
 import { Box, Button, Grid, Stack } from "@mui/joy";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { useGameContract } from "../hooks/useGameContract";
 import { useTokenContract } from "../hooks/useTokenContract";
 
@@ -10,8 +11,8 @@ export const GameBoard = () => {
   const [guess, setGuess] = useState<string>("");
 
   // Hooks
-  const { handleApproveTokens, handleCheckAllowance, hasWaitedForAllowance, allowance } = useTokenContract();
-  const { handleSubmitGuess, hasWaitedForGuess, isGuessCorrect } = useGameContract({ guess });
+  const { handleApproveTokens, handleCheckAllowance, hasWaitedForAllowance, allowanceObj } = useTokenContract();
+  const { handleSubmitGuess, hasWaitedForGuess, guessObj } = useGameContract({ guess });
 
   // Game Logic
   const handleLetterClick = (letter: string) => {
@@ -25,14 +26,19 @@ export const GameBoard = () => {
   // Use Effects
   useEffect(() => {
     if (hasWaitedForAllowance) {
-      console.log("Allowance:", allowance.data);
+      toast.info(`Your allowance is: ${allowanceObj.data} TKN.`, { closeOnClick: true });
     }
   }, [hasWaitedForAllowance]);
 
   useEffect(() => {
     if (hasWaitedForGuess) {
-      console.log("Was the guess correct?: " + isGuessCorrect.data);
-      setGuess("");
+      const data = guessObj.data;
+      if (data === true) {
+        toast.success(`Your guess was correct!!`, { closeOnClick: true });
+      } else {
+        toast.error(`Your guess was incorrect...`, { closeOnClick: true });
+        setGuess("");
+      }
     }
   }, [hasWaitedForGuess]);
 
