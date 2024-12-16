@@ -35,7 +35,7 @@ export const useGameContract = ({ guess }: UseGameContractProps) => {
   });
 
   // Get Guess Result
-  const isGuessCorrect = useReadContract({
+  const guessObj = useReadContract({
     abi: WordleGameABI,
     address: WORDLE_GAME_ADDRESS,
     functionName: "guesses",
@@ -45,6 +45,6 @@ export const useGameContract = ({ guess }: UseGameContractProps) => {
   return {
     handleSubmitGuess,
     hasWaitedForGuess,
-    isGuessCorrect
+    guessObj
   };
 };
