@@ -11,13 +11,7 @@ export const GameBoard = () => {
   const [guess, setGuess] = useState<string>("");
 
   // Hooks
-  const {
-    handleApproveTokens,
-    handleCheckAllowance,
-    hasWaitedForAllowance,
-    allowance,
-    isLoading: isLoadingToken
-  } = useTokenContract();
+  const { handleApproveTokens, handleCheckAllowance, allowance, isLoading: isLoadingToken } = useTokenContract();
   const { handleSubmitGuess, hasWaitedForGuess, isGuessCorrect, isLoading: isLoadingGame } = useGameContract({ guess });
 
   // Game Logic
@@ -30,12 +24,6 @@ export const GameBoard = () => {
   };
 
   // Use Effects
-  useEffect(() => {
-    if (hasWaitedForAllowance && isLoadingToken === false) {
-      toast.info(`Your allowance is: ${allowance} TKN.`, { closeOnClick: true });
-    }
-  }, [hasWaitedForAllowance, isLoadingToken]);
-
   useEffect(() => {
     if (hasWaitedForGuess && isLoadingGame === false) {
       if (isGuessCorrect) {
