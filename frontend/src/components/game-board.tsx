@@ -11,8 +11,14 @@ export const GameBoard = () => {
   const [guess, setGuess] = useState<string>("");
 
   // Hooks
-  const { handleApproveTokens, handleCheckAllowance, hasWaitedForAllowance, allowanceObj } = useTokenContract();
-  const { handleSubmitGuess, hasWaitedForGuess, guessObj } = useGameContract({ guess });
+  const {
+    handleApproveTokens,
+    handleCheckAllowance,
+    hasWaitedForAllowance,
+    allowanceObj,
+    isLoading: isLoadingToken
+  } = useTokenContract();
+  const { handleSubmitGuess, hasWaitedForGuess, guessObj, isLoading: isLoadingGame } = useGameContract({ guess });
 
   // Game Logic
   const handleLetterClick = (letter: string) => {
@@ -25,13 +31,13 @@ export const GameBoard = () => {
 
   // Use Effects
   useEffect(() => {
-    if (hasWaitedForAllowance) {
+    if (hasWaitedForAllowance && isLoadingToken === false) {
       toast.info(`Your allowance is: ${allowanceObj.data} TKN.`, { closeOnClick: true });
     }
-  }, [hasWaitedForAllowance]);
+  }, [hasWaitedForAllowance, isLoadingToken]);
 
   useEffect(() => {
-    if (hasWaitedForGuess) {
+    if (hasWaitedForGuess && isLoadingGame === false) {
       const data = guessObj.data;
       if (data === true) {
         toast.success(`Your guess was correct!!`, { closeOnClick: true });
@@ -40,7 +46,7 @@ export const GameBoard = () => {
         setGuess("");
       }
     }
-  }, [hasWaitedForGuess]);
+  }, [hasWaitedForGuess, isLoadingGame]);
 
   useEffect(() => {
     if (hasWaitedForGuess) {
@@ -54,10 +60,22 @@ export const GameBoard = () => {
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
       {/* Submit Approve Tokens Button */}
       <Stack sx={{ flexDirection: "row", gap: 1 }}>
-        <Button size="lg" fullWidth onClick={handleApproveTokens} color="success">
+        <Button
+          size="lg"
+          fullWidth
+          onClick={handleApproveTokens}
+          color="success"
+          loading={isLoadingToken || isLoadingGame}
+        >
           Approve Tokens
         </Button>
-        <Button size="lg" fullWidth onClick={handleCheckAllowance} color="neutral">
+        <Button
+          size="lg"
+          fullWidth
+          onClick={handleCheckAllowance}
+          color="neutral"
+          loading={isLoadingToken || isLoadingGame}
+        >
           Check Allowance
         </Button>
       </Stack>
@@ -87,18 +105,31 @@ export const GameBoard = () => {
       <Grid container spacing={0.5} columns={6} sx={{ justifyContent: "center" }}>
         {ALPHABET.map(letter => (
           <Grid xs={1} key={letter}>
-            <Button size="lg" fullWidth onClick={() => handleLetterClick(letter)} color="neutral">
+            <Button
+              size="lg"
+              fullWidth
+              onClick={() => handleLetterClick(letter)}
+              color="neutral"
+              disabled={isLoadingGame}
+            >
               {letter}
             </Button>
           </Grid>
         ))}
         <Grid xs={2}>
-          <Button size="lg" fullWidth onClick={handleDelete} color="neutral">
+          <Button size="lg" fullWidth onClick={handleDelete} color="neutral" disabled={isLoadingGame}>
             Delete
           </Button>
         </Grid>
         <Grid xs={2}>
-          <Button size="lg" fullWidth onClick={handleSubmitGuess} disabled={guess.length < 5} color="success">
+          <Button
+            size="lg"
+            fullWidth
+            onClick={handleSubmitGuess}
+            color="success"
+            disabled={guess.length < 5}
+            loading={isLoadingGame}
+          >
             Submit
           </Button>
         </Grid>
