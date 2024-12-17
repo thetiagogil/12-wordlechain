@@ -25,6 +25,38 @@ export const WordleGameABI = [
   },
   {
     type: "function",
+    name: "MAX_ATTEMPTS",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "getUserGuesses",
+    inputs: [
+      {
+        name: "user",
+        type: "address",
+        internalType: "address"
+      }
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "string[]",
+        internalType: "string[]"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
     name: "guess",
     inputs: [
       {
@@ -33,23 +65,17 @@ export const WordleGameABI = [
         internalType: "string"
       }
     ],
-    outputs: [
-      {
-        name: "",
-        type: "bool",
-        internalType: "bool"
-      }
-    ],
+    outputs: [],
     stateMutability: "nonpayable"
   },
   {
     type: "function",
-    name: "guesses",
+    name: "hasUserGuessedCorrectly",
     inputs: [
       {
-        name: "",
-        type: "string",
-        internalType: "string"
+        name: "user",
+        type: "address",
+        internalType: "address"
       }
     ],
     outputs: [
@@ -73,30 +99,5 @@ export const WordleGameABI = [
       }
     ],
     stateMutability: "view"
-  },
-  {
-    type: "event",
-    name: "GuessMade",
-    inputs: [
-      {
-        name: "player",
-        type: "address",
-        indexed: true,
-        internalType: "address"
-      },
-      {
-        name: "guess",
-        type: "string",
-        indexed: false,
-        internalType: "string"
-      },
-      {
-        name: "isCorrect",
-        type: "bool",
-        indexed: false,
-        internalType: "bool"
-      }
-    ],
-    anonymous: false
   }
 ];
