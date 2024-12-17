@@ -18,23 +18,22 @@ export const useGameContract = ({ guess }: UseGameContractProps) => {
   const { writeContractAsync } = useWriteContract();
 
   // Read User Guesses
-  const getUserGuesses = useReadContract({
+  const { data: getUserGuesses, isLoading: isLoadingGuesses } = useReadContract({
     abi: WordleGameABI,
     address: WORDLE_GAME_ADDRESS,
     functionName: "getUserGuesses",
     args: [userAddress]
-  }).data;
+  }) as { data: string[]; isLoading: boolean };
 
   const getUserGuessesArray: string[] = Array.isArray(getUserGuesses) ? getUserGuesses : [];
 
   // Read Has User Guessed Correctly
-  const hasUserGuessedCorrectly =
-    useReadContract({
-      abi: WordleGameABI,
-      address: WORDLE_GAME_ADDRESS,
-      functionName: "hasUserGuessedCorrectly",
-      args: [userAddress]
-    }).data || false;
+  const { data: hasUserGuessedCorrectly, isLoading: isLoadingCorrect } = useReadContract({
+    abi: WordleGameABI,
+    address: WORDLE_GAME_ADDRESS,
+    functionName: "hasUserGuessedCorrectly",
+    args: [userAddress]
+  }) as { data: boolean; isLoading: boolean };
 
   // Handle Submit Guess Button
   const handleSubmitGuess = async (allowance: number) => {
@@ -68,23 +67,13 @@ export const useGameContract = ({ guess }: UseGameContractProps) => {
   };
 
   // Handle Wait For Transaction Receipt
-  const { isSuccess: hasWaitedForGuess } = useWaitForTransactionReceipt({
-    hash: hash
-  });
-
-  // Read Guess Result
-  const isGuessCorrect = useReadContract({
-    abi: WordleGameABI,
-    address: WORDLE_GAME_ADDRESS,
-    functionName: "guesses",
-    args: [guess]
-  }).data;
+  const { isSuccess: hasWaitedForGuess } = useWaitForTransactionReceipt({ hash });
 
   return {
     handleSubmitGuess,
     hasWaitedForGuess,
-    isGuessCorrect,
     getUserGuessesArray,
-    isLoading
+    hasUserGuessedCorrectly,
+    isLoading: isLoading || isLoadingGuesses || isLoadingCorrect
   };
 };
