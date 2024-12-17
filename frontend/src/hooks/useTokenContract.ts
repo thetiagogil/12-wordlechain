@@ -7,6 +7,7 @@ import { WORDLE_GAME_ADDRESS, WORDLE_TOKEN_ADDRESS } from "../config/constants";
 export const useTokenContract = () => {
   // States
   const [hash, setHash] = useState<`0x${string}` | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // Hooks
   const { address: userAddress } = useAccount();
@@ -14,6 +15,7 @@ export const useTokenContract = () => {
 
   // Handle Approve Tokens Button
   const handleApproveTokens = async () => {
+    setIsLoading(true);
     try {
       const response = await writeContractAsync({
         address: WORDLE_TOKEN_ADDRESS,
@@ -22,8 +24,11 @@ export const useTokenContract = () => {
         args: [WORDLE_GAME_ADDRESS, 10 * 10 ** 18]
       });
       setHash(response);
+      toast.success("Tokens approved successfully!", { closeOnClick: true });
     } catch (err: any) {
-      console.error(err);
+      toast.error("Failed to approve tokens. Please try again.", { closeOnClick: true });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -42,17 +47,14 @@ export const useTokenContract = () => {
 
   // Handle Check Allowance Button
   const handleCheckAllowance = async () => {
-    try {
-      toast.info(`Your allowance is: ${allowanceObj.data}.`, { closeOnClick: true });
-    } catch (err: any) {
-      console.error(err);
-    }
+    toast.info(`Your allowance is: ${allowanceObj.data} TKN.`, { closeOnClick: true });
   };
 
   return {
     handleApproveTokens,
     handleCheckAllowance,
     hasWaitedForAllowance,
-    allowanceObj
+    allowanceObj,
+    isLoading
   };
 };
