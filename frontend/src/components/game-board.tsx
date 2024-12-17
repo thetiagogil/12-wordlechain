@@ -1,33 +1,53 @@
 import { Box, Button, Grid, Stack } from "@mui/joy";
-import { useState } from "react";
-import { useWordleGame } from "../hooks/useWordleGame";
+import { useEffect, useState } from "react";
+import { useGameContract } from "../hooks/useGameContract";
+import { useTokenContract } from "../hooks/useTokenContract";
 
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
 export const GameBoard = () => {
-  const [word, setWord] = useState<string>("");
-  const { makeGuess, isPending } = useWordleGame();
+  // States
+  const [guess, setGuess] = useState<string>("");
 
+  // Hooks
+  const { handleApproveTokens, handleCheckAllowance, hasWaitedForAllowance, allowance } = useTokenContract();
+  const { handleSubmitGuess, hasWaitedForGuess, isGuessCorrect } = useGameContract({ guess });
+
+  // Game Logic
   const handleLetterClick = (letter: string) => {
-    if (word.length < 5) setWord(prev => prev + letter);
+    if (guess.length < 5) setGuess(prev => prev + letter);
   };
 
   const handleDelete = () => {
-    if (word.length > 0) setWord(prev => prev.slice(0, -1));
+    if (guess.length > 0) setGuess(prev => prev.slice(0, -1));
   };
 
-  const handleSubmit = async () => {
-    try {
-      makeGuess(word.toUpperCase());
-    } catch (err: any) {
-      console.error(err);
-    } finally {
-      setWord("");
+  // Use Effects
+  useEffect(() => {
+    if (hasWaitedForAllowance) {
+      console.log("Allowance:", allowance.data);
     }
-  };
+  }, [hasWaitedForAllowance]);
+
+  useEffect(() => {
+    if (hasWaitedForGuess) {
+      console.log("Was the guess correct?: " + isGuessCorrect.data);
+      setGuess("");
+    }
+  }, [hasWaitedForGuess]);
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+      {/* Submit Approve Tokens Button */}
+      <Stack sx={{ flexDirection: "row", gap: 1 }}>
+        <Button size="lg" fullWidth onClick={handleApproveTokens} color="success">
+          Approve Tokens
+        </Button>
+        <Button size="lg" fullWidth onClick={handleCheckAllowance} color="neutral">
+          Check Allowance
+        </Button>
+      </Stack>
+
       {/* Word */}
       <Grid container sx={{ justifyContent: "space-between" }}>
         {Array.from({ length: 5 }).map((_, index) => (
@@ -44,34 +64,27 @@ export const GameBoard = () => {
               fontWeight: "bold"
             }}
           >
-            {word[index]}
+            {guess[index]}
           </Grid>
         ))}
       </Grid>
 
-      {/* Letters + Buttons */}
+      {/* Letters + Delete Button + Submit Guess Button */}
       <Grid container spacing={0.5} columns={6} sx={{ justifyContent: "center" }}>
         {ALPHABET.map(letter => (
           <Grid xs={1} key={letter}>
-            <Button size="lg" fullWidth onClick={() => handleLetterClick(letter)} color="neutral" disabled={isPending}>
+            <Button size="lg" fullWidth onClick={() => handleLetterClick(letter)} color="neutral">
               {letter}
             </Button>
           </Grid>
         ))}
         <Grid xs={2}>
-          <Button size="lg" fullWidth onClick={handleDelete} color="neutral" disabled={isPending}>
+          <Button size="lg" fullWidth onClick={handleDelete} color="neutral">
             Delete
           </Button>
         </Grid>
         <Grid xs={2}>
-          <Button
-            size="lg"
-            fullWidth
-            onClick={handleSubmit}
-            loading={isPending}
-            disabled={word.length < 5}
-            color="success"
-          >
+          <Button size="lg" fullWidth onClick={handleSubmitGuess} disabled={guess.length < 5} color="success">
             Submit
           </Button>
         </Grid>
