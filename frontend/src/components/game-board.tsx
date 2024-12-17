@@ -1,6 +1,7 @@
 import { Box, Button, Grid, Stack } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { NUMBER_OF_GUESSES } from "../config/constants";
 import { useGameContract } from "../hooks/useGameContract";
 import { useTokenContract } from "../hooks/useTokenContract";
 
@@ -12,7 +13,13 @@ export const GameBoard = () => {
 
   // Hooks
   const { handleApproveTokens, handleCheckAllowance, allowance, isLoading: isLoadingToken } = useTokenContract();
-  const { handleSubmitGuess, hasWaitedForGuess, isGuessCorrect, isLoading: isLoadingGame } = useGameContract({ guess });
+  const {
+    handleSubmitGuess,
+    hasWaitedForGuess,
+    isGuessCorrect,
+    getUserGuessesArray,
+    isLoading: isLoadingGame
+  } = useGameContract({ guess });
 
   // Game Logic
   const handleLetterClick = (letter: string) => {
@@ -23,6 +30,17 @@ export const GameBoard = () => {
     if (guess.length > 0) setGuess(prev => prev.slice(0, -1));
   };
 
+  const guessesToShow = [];
+  for (let i = 0; i < NUMBER_OF_GUESSES; i++) {
+    if (i < getUserGuessesArray.length) {
+      guessesToShow.push(getUserGuessesArray[i]);
+    } else if (i === getUserGuessesArray.length) {
+      guessesToShow.push(guess.padEnd(5, " "));
+    } else {
+      guessesToShow.push("".padEnd(5, " "));
+    }
+  }
+
   // Use Effects
   useEffect(() => {
     if (hasWaitedForGuess && isLoadingGame === false) {
@@ -30,7 +48,6 @@ export const GameBoard = () => {
         toast.success(`Your guess was correct!!`, { closeOnClick: true });
       } else {
         toast.error(`Your guess was incorrect...`, { closeOnClick: true });
-        setGuess("");
       }
     }
   }, [hasWaitedForGuess, isLoadingGame]);
@@ -38,7 +55,7 @@ export const GameBoard = () => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
       {/* Submit Approve Tokens Button */}
-      <Stack sx={{ flexDirection: "row", gap: 1 }}>
+      <Stack component="section" sx={{ flexDirection: "row", gap: 1 }}>
         <Button
           size="lg"
           fullWidth
@@ -60,29 +77,34 @@ export const GameBoard = () => {
         </Button>
       </Stack>
 
-      {/* Word */}
-      <Grid container sx={{ justifyContent: "space-between" }}>
-        {Array.from({ length: 5 }).map((_, index) => (
-          <Grid
-            component={Stack}
-            key={index}
-            sx={{
-              justifyContent: "center",
-              alignItems: "center",
-              border: "1px solid",
-              height: { xs: 65, sm: 75 },
-              width: { xs: 65, sm: 75 },
-              fontSize: 32,
-              fontWeight: "bold"
-            }}
-          >
-            {guess[index]}
+      {/* Guesses */}
+      <Stack component="section" sx={{ gap: 1 }}>
+        {guessesToShow.map((rowGuess: string, rowIndex: number) => (
+          <Grid container key={rowIndex} sx={{ justifyContent: "center", gap: 1 }}>
+            {Array.from(rowGuess).map((letter, colIndex) => (
+              <Box
+                key={colIndex}
+                sx={{
+                  height: 60,
+                  width: 60,
+                  border: "1px solid",
+                  borderColor: rowIndex >= getUserGuessesArray.length ? "black" : "lightGrey",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  fontSize: 32,
+                  fontWeight: "bold"
+                }}
+              >
+                {letter.trim().toUpperCase()}
+              </Box>
+            ))}
           </Grid>
         ))}
-      </Grid>
+      </Stack>
 
       {/* Letters + Delete Button + Submit Guess Button */}
-      <Grid container spacing={0.5} columns={6} sx={{ justifyContent: "center" }}>
+      <Grid component="section" container spacing={0.5} columns={6} sx={{ justifyContent: "center" }}>
         {ALPHABET.map(letter => (
           <Grid xs={1} key={letter}>
             <Button

@@ -18,13 +18,14 @@ export const useGameContract = ({ guess }: UseGameContractProps) => {
   const { writeContractAsync } = useWriteContract();
 
   // Read User Guesses
-  const getUserGuesses =
-    useReadContract({
-      abi: WordleGameABI,
-      address: WORDLE_GAME_ADDRESS,
-      functionName: "getUserGuesses",
-      args: [userAddress]
-    }).data || [];
+  const getUserGuesses = useReadContract({
+    abi: WordleGameABI,
+    address: WORDLE_GAME_ADDRESS,
+    functionName: "getUserGuesses",
+    args: [userAddress]
+  }).data;
+
+  const getUserGuessesArray: string[] = Array.isArray(getUserGuesses) ? getUserGuesses : [];
 
   // Read Has User Guessed Correctly
   const hasUserGuessedCorrectly =
@@ -83,6 +84,7 @@ export const useGameContract = ({ guess }: UseGameContractProps) => {
     handleSubmitGuess,
     hasWaitedForGuess,
     isGuessCorrect,
+    getUserGuessesArray,
     isLoading
   };
 };
