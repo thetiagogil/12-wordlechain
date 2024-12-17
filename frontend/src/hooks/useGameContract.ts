@@ -17,16 +17,20 @@ export const useGameContract = ({ guess }: UseGameContractProps) => {
   const { writeContractAsync } = useWriteContract();
 
   // Handle Submit Guess Button
-  const handleSubmitGuess = async () => {
+  const handleSubmitGuess = async (allowance: number) => {
     setIsLoading(true);
     try {
-      const response = await writeContractAsync({
-        address: WORDLE_GAME_ADDRESS,
-        abi: WordleGameABI,
-        functionName: "guess",
-        args: [guess]
-      });
-      setHash(response);
+      if (allowance > 0) {
+        const response = await writeContractAsync({
+          address: WORDLE_GAME_ADDRESS,
+          abi: WordleGameABI,
+          functionName: "guess",
+          args: [guess]
+        });
+        setHash(response);
+      } else {
+        toast.error("You need allowance to play the game.", { closeOnClick: true });
+      }
     } catch (err: any) {
       toast.error("Failed to submit guess. Please try again.", { closeOnClick: true });
       console.error(err);
@@ -48,10 +52,12 @@ export const useGameContract = ({ guess }: UseGameContractProps) => {
     args: [guess]
   });
 
+  const isGuessCorrect = guessObj?.data;
+
   return {
     handleSubmitGuess,
     hasWaitedForGuess,
-    guessObj,
+    isGuessCorrect,
     isLoading
   };
 };
