@@ -59,29 +59,6 @@ export const GameBoard = () => {
         <IsLoading />
       ) : (
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          {/* Submit Approve Tokens Button */}
-          <Stack component="section" sx={{ flexDirection: "row", gap: 1 }}>
-            <Button
-              size="lg"
-              fullWidth
-              onClick={handleApproveTokens}
-              color="success"
-              loading={isLoadingToken || isLoadingGame}
-              disabled={allowance > 0}
-            >
-              Approve Tokens
-            </Button>
-            <Button
-              size="lg"
-              fullWidth
-              onClick={handleCheckAllowance}
-              color="neutral"
-              loading={isLoadingToken || isLoadingGame}
-            >
-              Check Allowance
-            </Button>
-          </Stack>
-
           {/* Guesses */}
           <Stack component="section" sx={{ gap: 1 }}>
             {guessesToShow.map((rowGuess: string, rowIndex: number) => (
@@ -106,6 +83,29 @@ export const GameBoard = () => {
                 ))}
               </Grid>
             ))}
+          </Stack>
+
+          {/* Submit Approve Tokens Button */}
+          <Stack component="section" sx={{ flexDirection: "row", gap: 1 }}>
+            <Button
+              size="lg"
+              fullWidth
+              onClick={handleApproveTokens}
+              color="success"
+              loading={isLoadingToken || isLoadingGame}
+              disabled={allowance > 0}
+            >
+              Approve Tokens
+            </Button>
+            <Button
+              size="lg"
+              fullWidth
+              onClick={handleCheckAllowance}
+              color="neutral"
+              loading={isLoadingToken || isLoadingGame}
+            >
+              Check Allowance
+            </Button>
           </Stack>
 
           {/* Letters + Delete Button + Submit Guess Button */}
