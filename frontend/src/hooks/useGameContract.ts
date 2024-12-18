@@ -2,7 +2,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { WordleGameABI } from "../abis/WordleGame.abi";
-import { WORDLE_GAME_ADDRESS } from "../config/constants";
+import { NUMBER_OF_GUESSES, WORDLE_GAME_ADDRESS } from "../config/constants";
 
 type UseGameContractProps = {
   guess: string;
@@ -34,6 +34,17 @@ export const useGameContract = ({ guess }: UseGameContractProps) => {
     functionName: "hasUserGuessedCorrectly",
     args: [userAddress]
   }) as { data: boolean; isLoading: boolean };
+
+  // Read Letter Statuses
+  const getLetterStatusesArray = Array.from({ length: NUMBER_OF_GUESSES }).map(
+    (_, index) =>
+      useReadContract({
+        abi: WordleGameABI,
+        address: WORDLE_GAME_ADDRESS,
+        functionName: "getLetterStatuses",
+        args: [userAddress, index]
+      }) as { data: number[] }
+  );
 
   // Handle Submit Guess Button
   const handleSubmitGuess = async (allowance: number) => {
@@ -73,6 +84,7 @@ export const useGameContract = ({ guess }: UseGameContractProps) => {
     handleSubmitGuess,
     hasWaitedForGuess,
     getUserGuessesArray,
+    getLetterStatusesArray,
     hasUserGuessedCorrectly,
     isLoading: isLoading || isLoadingGuesses || isLoadingCorrect
   };
