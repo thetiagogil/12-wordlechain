@@ -38,6 +38,44 @@ contract WordleGame {
         }
     }
 
+    // Function to calculate letter statuses for a specific guess
+    function getLetterStatuses(address user, uint256 guessIndex) public view returns (uint8[5] memory) {
+        require(guessIndex < userGuesses[user].length, "Invalid guess index!");
+    
+        string memory userGuess = userGuesses[user][guessIndex];
+        bytes memory guessBytes = bytes(userGuess);
+        bytes memory fixedBytes = bytes(FIXED_WORD);
+    
+        uint8[5] memory letterStatuses;
+    
+        // Flags to track letters already used
+        bool[5] memory usedFixed;
+    
+        // First Pass: Mark Correct Letters
+        for (uint8 i = 0; i < 5; i++) {
+            if (guessBytes[i] == fixedBytes[i]) {
+                letterStatuses[i] = 2;
+                usedFixed[i] = true;
+            }
+        }
+    
+        // Second Pass: Mark Misplaced Letters
+        for (uint8 i = 0; i < 5; i++) {
+            if (letterStatuses[i] == 2) continue;
+    
+            for (uint8 j = 0; j < 5; j++) {
+                if (!usedFixed[j] && guessBytes[i] == fixedBytes[j]) {
+                    letterStatuses[i] = 1;
+                    usedFixed[j] = true;
+                    break;
+                }
+            }
+        }
+    
+        return letterStatuses;
+    }
+
+
     // Function to get all the user's guesses
     function getUserGuesses(address user) public view returns (string[] memory) {
         return userGuesses[user];

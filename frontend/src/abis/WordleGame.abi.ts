@@ -38,6 +38,30 @@ export const WordleGameABI = [
   },
   {
     type: "function",
+    name: "getLetterStatuses",
+    inputs: [
+      {
+        name: "user",
+        type: "address",
+        internalType: "address"
+      },
+      {
+        name: "guessIndex",
+        type: "uint256",
+        internalType: "uint256"
+      }
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint8[5]",
+        internalType: "uint8[5]"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
     name: "getUserGuesses",
     inputs: [
       {
