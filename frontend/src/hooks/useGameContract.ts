@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import { useAccount, useReadContract, useReadContracts, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { WordleGameABI } from "../abis/WordleGame.abi";
-import { NUMBER_OF_GUESSES, WORDLE_GAME_ADDRESS } from "../config/constants";
+import { WORDLE_GAME_ADDRESS } from "../config/constants";
 
 type UseGameContractProps = {
   guess: string;
@@ -22,7 +22,7 @@ export const useGameContract = ({ guess }: UseGameContractProps) => {
     abi: WordleGameABI,
     address: WORDLE_GAME_ADDRESS,
     functionName: "getUserGuesses",
-    args: [userAddress]
+    args: [userAddress as `0x${string}`]
   }) as { data: string[]; isLoading: boolean };
 
   const getUserGuessesArray: string[] = Array.isArray(getUserGuesses) ? getUserGuesses : [];
@@ -32,19 +32,29 @@ export const useGameContract = ({ guess }: UseGameContractProps) => {
     abi: WordleGameABI,
     address: WORDLE_GAME_ADDRESS,
     functionName: "hasUserGuessedCorrectly",
-    args: [userAddress]
+    args: [userAddress as `0x${string}`]
   }) as { data: boolean; isLoading: boolean };
 
   // Read Letter Statuses
-  const getLetterStatusesArray = Array.from({ length: NUMBER_OF_GUESSES }).map(
-    (_, index) =>
-      useReadContract({
-        abi: WordleGameABI,
-        address: WORDLE_GAME_ADDRESS,
-        functionName: "getLetterStatuses",
-        args: [userAddress, index]
-      }) as { data: number[] }
-  );
+  const getLetterStatusesMap =
+    getUserGuessesArray.length > 0
+      ? Array.from({ length: getUserGuessesArray.length }).map(
+          (_, index) =>
+            ({
+              abi: WordleGameABI,
+              address: WORDLE_GAME_ADDRESS,
+              functionName: "getLetterStatuses",
+              args: [userAddress as `0x${string}`, BigInt(index)]
+            }) as const
+        )
+      : [];
+
+  const { data: getLetterStatusesData, isLoading: isLoadingStatusesData } = useReadContracts({
+    contracts: getLetterStatusesMap
+  });
+
+  const getLetterStatusesArray =
+    getLetterStatusesData?.map(item => (item.result ? { data: Array.from(item.result) } : { data: [] })) || [];
 
   // Handle Submit Guess Button
   const handleSubmitGuess = async (allowance: number) => {
@@ -86,6 +96,6 @@ export const useGameContract = ({ guess }: UseGameContractProps) => {
     getUserGuessesArray,
     getLetterStatusesArray,
     hasUserGuessedCorrectly,
-    isLoading: isLoading || isLoadingGuesses || isLoadingCorrect
+    isLoading: isLoading || isLoadingGuesses || isLoadingCorrect || isLoadingStatusesData
   };
 };

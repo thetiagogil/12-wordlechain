@@ -41,15 +41,15 @@ export const GameBoard = () => {
 
   // Function to Get User Guesses
   const getGuesses = () => {
-    const guessesToShow = [];
-    for (let i = 0; i < NUMBER_OF_GUESSES; i++) {
-      if (i < getUserGuessesArray.length) {
-        guessesToShow.push(getUserGuessesArray[i]);
-      } else if (i === getUserGuessesArray.length) {
-        guessesToShow.push(guess.padEnd(5, " "));
-      } else {
-        guessesToShow.push("".padEnd(5, " "));
-      }
+    // This adds the rows of the user's previous guesses
+    const guessesToShow = [...getUserGuessesArray];
+    // This adds the row where the user is typing the current guess
+    if (guessesToShow.length < NUMBER_OF_GUESSES) {
+      guessesToShow.push(guess.padEnd(5, " "));
+    }
+    // This adds aditional empty rows until NUMBER_OF_GUESSES is matched
+    while (guessesToShow.length < NUMBER_OF_GUESSES) {
+      guessesToShow.push("".padEnd(5, " "));
     }
     return guessesToShow;
   };

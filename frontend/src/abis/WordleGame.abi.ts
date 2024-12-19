@@ -124,4 +124,4 @@ export const WordleGameABI = [
     ],
     stateMutability: "view"
   }
-];
+] as const;
