@@ -1,5 +1,4 @@
-import { Box, Button, Grid, Stack } from "@mui/joy";
-import { motion } from "framer-motion";
+import { Box, Button, Grid, Stack, Typography } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { NUMBER_OF_GUESSES } from "../../config/constants";
@@ -87,38 +86,26 @@ export const GameBoard = () => {
           <Stack component="section" sx={{ gap: 1 }}>
             {getGuesses().map((rowGuess: string, rowIndex: number) => (
               <Grid container key={rowIndex} sx={{ justifyContent: "center", gap: 1 }}>
-                {Array.from(rowGuess).map((letter, colIndex) => {
-                  const isCurrentRow = rowIndex === getUserGuessesArray.length;
-                  const backgroundColor = getLettersBgColor(
-                    rowIndex,
-                    colIndex,
-                    getLetterStatusesArray,
-                    LETTER_BG_COLORS
-                  );
-                  return (
-                    <Box
-                      key={colIndex}
-                      component={motion.div}
-                      initial={{ scale: 1 }}
-                      animate={isCurrentRow && letter.trim() && { scale: [1, 1.2, 1] }}
-                      transition={{ duration: 0.1 }}
-                      sx={{
-                        backgroundColor,
-                        height: 60,
-                        width: 60,
-                        border: "1px solid",
-                        borderColor: rowIndex >= getUserGuessesArray.length ? "black" : "lightGrey",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        fontSize: 32,
-                        fontWeight: "bold"
-                      }}
-                    >
+                {Array.from(rowGuess).map((letter, colIndex) => (
+                  <Box
+                    key={colIndex}
+                    sx={{
+                      height: 60,
+                      width: 60,
+                      border: "1px solid",
+                      borderColor: "neutral.700",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      fontSize: 32,
+                      fontWeight: "bold"
+                    }}
+                  >
+                    <Typography level="h2" sx={{ color: "neutral.50" }}>
                       {letter.trim().toUpperCase()}
-                    </Box>
-                  );
-                })}
+                    </Typography>
+                  </Box>
+                ))}
               </Grid>
             ))}
           </Stack>
@@ -132,6 +119,7 @@ export const GameBoard = () => {
               color="success"
               loading={isLoadingToken || isLoadingGame}
               disabled={allowance > 0}
+              sx={{ bgcolor: "success.700" }}
             >
               Approve Tokens
             </Button>
@@ -174,6 +162,7 @@ export const GameBoard = () => {
                 color="success"
                 disabled={guess.length < 5}
                 loading={isLoadingGame}
+                sx={{ bgcolor: "success.700" }}
               >
                 Submit
               </Button>
