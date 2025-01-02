@@ -6,7 +6,7 @@ export const theme = extendTheme({
       palette: {
         primary: {},
         background: {
-          body: "#1a1a1a"
+          body: "#121213"
         }
       }
     }

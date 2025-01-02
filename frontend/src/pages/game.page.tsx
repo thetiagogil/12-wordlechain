@@ -20,6 +20,7 @@ export const GamePage = () => {
     handleSubmitGuess,
     hasWaitedForGuess,
     getUserGuessesArray,
+    getLetterStatusesArray,
     hasUserGuessedCorrectly,
     isLoading: isLoadingGame
   } = useGameContract({ guess });
@@ -42,7 +43,11 @@ export const GamePage = () => {
         <IsLoading />
       ) : (
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          <GameGuess guess={guess} getUserGuessesArray={getUserGuessesArray} />
+          <GameGuess
+            guess={guess}
+            getUserGuessesArray={getUserGuessesArray}
+            getLetterStatusesArray={getLetterStatusesArray}
+          />
           <GameApprove
             handleApproveTokens={handleApproveTokens}
             handleCheckAllowance={handleCheckAllowance}
