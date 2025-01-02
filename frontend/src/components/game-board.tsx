@@ -1,4 +1,5 @@
 import { Box, Button, Grid, Stack } from "@mui/joy";
+import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { NUMBER_OF_GUESSES } from "../config/constants";
@@ -87,6 +88,7 @@ export const GameBoard = () => {
             {getGuesses().map((rowGuess: string, rowIndex: number) => (
               <Grid container key={rowIndex} sx={{ justifyContent: "center", gap: 1 }}>
                 {Array.from(rowGuess).map((letter, colIndex) => {
+                  const isCurrentRow = rowIndex === getUserGuessesArray.length;
                   const backgroundColor = getLettersBgColor(
                     rowIndex,
                     colIndex,
@@ -96,11 +98,16 @@ export const GameBoard = () => {
                   return (
                     <Box
                       key={colIndex}
+                      component={motion.div}
+                      initial={{ scale: 1 }}
+                      animate={isCurrentRow && letter.trim() && { scale: [1, 1.2, 1] }}
+                      transition={{ duration: 0.1 }}
                       sx={{
                         backgroundColor,
                         height: 60,
                         width: 60,
                         border: "1px solid",
+                        borderColor: rowIndex >= getUserGuessesArray.length ? "black" : "lightGrey",
                         display: "flex",
                         justifyContent: "center",
                         alignItems: "center",
