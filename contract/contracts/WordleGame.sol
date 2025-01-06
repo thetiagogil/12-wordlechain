@@ -5,22 +5,32 @@ import "./WordleToken.sol";
 
 contract WordleGame {
 	address public token;
-	string private constant FIXED_WORD = "APPLE";
+	address public admin;
+	string private WORD;
 	uint256 public constant GUESS_FEE = 10 * 10 ** 18;
 	uint256 public constant MAX_ATTEMPTS = 5;
 
-	// Mapping to store all guesses per user
 	mapping(address => string[]) private userGuesses;
-
-	// Mapping to track if a user has guessed the correct word
 	mapping(address => bool) private hasGuessedCorrectly;
 
 	constructor(address _token) {
 		token = _token;
+		admin = msg.sender;
+	}
+
+	modifier onlyAdmin() {
+		require(msg.sender == admin, "Only admin can perform this action");
+		_;
+	}
+
+	// Function to set the word (admin only)
+	function setWord(string memory _word) external onlyAdmin {
+		require(bytes(_word).length == 5, "Word must be 5 letters long");
+		WORD = _word;
 	}
 
 	// Function to make a guess
-	function guess(string memory userGuess) public {
+	function makeGuess(string memory userGuess) public {
 		require(bytes(userGuess).length == 5, "Guess must be 5 letters long!");
 		require(
 			IERC20(token).balanceOf(msg.sender) >= GUESS_FEE,
@@ -42,7 +52,7 @@ contract WordleGame {
 
 		// Check if the guess is correct
 		bool isCorrect = keccak256(abi.encodePacked(userGuess)) ==
-			keccak256(abi.encodePacked(FIXED_WORD));
+			keccak256(abi.encodePacked(WORD));
 		if (isCorrect) {
 			hasGuessedCorrectly[msg.sender] = true;
 		}
@@ -57,7 +67,7 @@ contract WordleGame {
 
 		string memory userGuess = userGuesses[user][guessIndex];
 		bytes memory guessBytes = bytes(userGuess);
-		bytes memory fixedBytes = bytes(FIXED_WORD);
+		bytes memory fixedBytes = bytes(WORD);
 
 		uint8[5] memory letterStatuses;
 
@@ -89,7 +99,9 @@ contract WordleGame {
 	}
 
 	// Function to check if the user has guessed correctly
-	function hasUserGuessedCorrectly(address user) public view returns (bool) {
+	function getHasUserGuessedCorrectly(
+		address user
+	) public view returns (bool) {
 		return hasGuessedCorrectly[user];
 	}
 }
