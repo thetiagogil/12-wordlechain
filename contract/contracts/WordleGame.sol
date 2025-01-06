@@ -7,7 +7,7 @@ contract WordleGame {
 	address public token;
 	address public admin;
 	string private WORD;
-	uint256 public constant GUESS_FEE = 10 * 10 ** 18;
+	uint256 public constant GUESS_FEE = 1 ether;
 	uint256 public constant MAX_ATTEMPTS = 5;
 
 	mapping(address => string[]) private userGuesses;
