@@ -31,6 +31,17 @@ contract WordleGameTest is Test {
 		vm.prank(player);
 		vm.expectRevert("Only admin can perform this action");
 		game.setWord("PLACE");
+
+		vm.prank(admin);
+		game.setWord("PLACE");
+
+		vm.prank(player);
+		game.makeGuess("PLACE");
+		bool guessedCorrectly = game.getHasUserGuessedCorrectly(player);
+		assertTrue(
+			guessedCorrectly,
+			"Player should guess the newly set word correctly"
+		);
 	}
 
 	function testMakeGuessWithInsufficientTokens() public {
