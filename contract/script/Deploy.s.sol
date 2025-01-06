@@ -16,7 +16,7 @@ contract Deploy is Script {
 		vm.startBroadcast(deployerPrivateKey);
 
 		// Deploy the WordleToken contract
-		WordleToken token = new WordleToken(1000 * 10 ** 18);
+		WordleToken token = new WordleToken(1000 ether);
 		console.log("Wordle Token deployed at:", address(token));
 
 		// Deploy the WordleGame contract
@@ -24,9 +24,9 @@ contract Deploy is Script {
 		console.log("Wordle Game deployed at:", address(game));
 
 		// Transfer tokens to the user's address
-		token.transfer(admin, 100 * 10 ** 18);
+		token.transfer(admin, 10 ether);
 		console.log("100 tokens transferred to user address:", admin);
-		token.transfer(player, 100 * 10 ** 18);
+		token.transfer(player, 10 ether);
 		console.log("100 tokens transferred to user address:", player);
 
 		vm.stopBroadcast();

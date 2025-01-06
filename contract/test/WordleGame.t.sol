@@ -14,13 +14,13 @@ contract WordleGameTest is Test {
 	address public playerWithoutTokens;
 
 	function setUp() public {
-		token = new WordleToken(1000 * 10 ** 18);
+		token = new WordleToken(1000 ether);
 		game = new WordleGame(address(token));
 		admin = address(this);
 		player = address(0x123);
 		playerWithoutTokens = address(0x456);
 
-		token.transfer(player, 100 * 10 ** 18);
+		token.transfer(player, 10 ether);
 		vm.prank(player);
 		token.approve(address(game), type(uint256).max);
 

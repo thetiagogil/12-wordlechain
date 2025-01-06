@@ -10,31 +10,27 @@ contract WordleTokenTest is Test {
 	address public spender;
 
 	function setUp() public {
-		token = new WordleToken(1000 * 10 ** 18);
+		token = new WordleToken(1000 ether);
 		owner = address(this);
 		spender = address(0x123);
 
-		token.transfer(spender, 10 * 10 ** 18);
+		token.transfer(spender, 10 ether);
 	}
 
 	function testApproveTokens() public {
 		vm.prank(spender);
-		bool success = token.approve(owner, 10 * 10 ** 18);
+		bool success = token.approve(owner, 10 ether);
 		assertTrue(success, "Approval should succeed");
 
 		uint256 allowance = token.allowance(spender, owner);
-		assertEq(
-			allowance,
-			10 * 10 ** 18,
-			"Allowance should match approved amount"
-		);
+		assertEq(allowance, 10 ether, "Allowance should match approved amount");
 	}
 
 	function testCheckAllowance() public {
 		vm.prank(spender);
-		token.approve(owner, 10 * 10 ** 18);
+		token.approve(owner, 10 ether);
 
 		uint256 allowance = token.allowance(spender, owner);
-		assertEq(allowance, 10 * 10 ** 18, "Allowance should be as set");
+		assertEq(allowance, 10 ether, "Allowance should be as set");
 	}
 }
