@@ -22,6 +22,16 @@ export const theme = extendTheme({
           transition: "0.3s"
         })
       }
+    },
+    JoyInput: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          border: "1px solid",
+          borderRadius: "2px",
+          borderColor: theme.vars.palette.neutral[600],
+          transition: "0.3s"
+        })
+      }
     }
   }
 });

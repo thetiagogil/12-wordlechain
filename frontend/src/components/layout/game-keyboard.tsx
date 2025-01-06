@@ -5,7 +5,7 @@ type GameKeyboardProps = {
   setGuess: (value: string | ((value: string) => string)) => void;
   handleSubmitGuess: (allowance: number, onSuccess?: () => void) => void;
   allowance: number;
-  hasUserGuessedCorrectly: boolean;
+  getHasUserGuessedCorrectly: boolean;
   isLoadingGame: boolean;
 };
 
@@ -14,7 +14,7 @@ export const GameKeyboard = ({
   setGuess,
   handleSubmitGuess,
   allowance,
-  hasUserGuessedCorrectly,
+  getHasUserGuessedCorrectly,
   isLoadingGame
 }: GameKeyboardProps) => {
   const ROW1 = "QWERTYUIOP".split("");
@@ -31,7 +31,7 @@ export const GameKeyboard = ({
 
   const lettersSize = { width: 40, height: 55 };
   const actionsSize = { width: 62, height: 55 };
-  const isDisabled = allowance <= 0 || hasUserGuessedCorrectly || isLoadingGame ? true : false;
+  const isDisabled = allowance <= 0 || getHasUserGuessedCorrectly || isLoadingGame ? true : false;
 
   return (
     <Stack component="section" sx={{ justifyContent: "center", gap: 0.5 }}>

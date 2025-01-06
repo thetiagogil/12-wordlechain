@@ -8,8 +8,9 @@ import "../contracts/WordleGame.sol";
 contract Deploy is Script {
 	function run() external {
 		// Load environment variables
-		uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-		address playerAddress = vm.envAddress("PUBLIC_KEY");
+		uint256 deployerPrivateKey = vm.envUint("ADMIN_PRIVATE_KEY");
+		address admin = vm.envAddress("ADMIN_PUBLIC_KEY");
+		address player = vm.envAddress("PLAYER_PUBLIC_KEY");
 
 		// Start broadcasting transactions
 		vm.startBroadcast(deployerPrivateKey);
@@ -23,8 +24,10 @@ contract Deploy is Script {
 		console.log("Wordle Game deployed at:", address(game));
 
 		// Transfer tokens to the user's address
-		token.transfer(playerAddress, 100 * 10 ** 18);
-		console.log("100 tokens transferred to user address:", playerAddress);
+		token.transfer(admin, 100 * 10 ** 18);
+		console.log("100 tokens transferred to user address:", admin);
+		token.transfer(player, 100 * 10 ** 18);
+		console.log("100 tokens transferred to user address:", player);
 
 		vm.stopBroadcast();
 	}
