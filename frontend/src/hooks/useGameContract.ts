@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 import { useAccount, useReadContract, useReadContracts, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { WordleGameABI } from "../abis/WordleGame.abi";
 import { WORDLE_GAME_ADDRESS } from "../config/constants";
+import { showToast } from "../utils/toast";
 import { useTokenContract } from "./useTokenContract";
 
 type UseGameContractProps = {
@@ -78,7 +78,7 @@ export const useGameContract = ({ guess }: UseGameContractProps) => {
   // Handle set new word by admin
   const handleSetWord = async (newWord: string) => {
     if (newWord.length !== 5) {
-      toast.error("Word must be 5 letters!", { closeOnClick: true });
+      showToast("error", "Word must be 5 letters!");
       return;
     }
 
@@ -91,9 +91,9 @@ export const useGameContract = ({ guess }: UseGameContractProps) => {
         args: [newWord]
       });
       setHash(response);
-      toast.success("Word set successfully!", { closeOnClick: true });
+      showToast("success", "Word set successfully!");
     } catch (err: any) {
-      toast.error("Failed to set word. Please try again.", { closeOnClick: true });
+      showToast("error", "Failed to set word. Please try again.");
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -106,13 +106,13 @@ export const useGameContract = ({ guess }: UseGameContractProps) => {
     try {
       switch (true) {
         case allowance <= 0:
-          toast.error("You need allowance to play the game.", { closeOnClick: true });
+          showToast("error", "You need allowance to play the game.");
           break;
         case getHasPlayerGuessedCorrectly:
-          toast.error("You have already guessed correctly!", { closeOnClick: true });
+          showToast("error", "You have already guessed correctly!");
           break;
         case Array.isArray(getPlayerGuesses) && getPlayerGuesses.length >= 5:
-          toast.error("You already exceeded the limit play tries for today!", { closeOnClick: true });
+          showToast("error", "You already exceeded the limit play tries for today!");
           break;
         default:
           const response = await writeContractAsync({
@@ -127,7 +127,7 @@ export const useGameContract = ({ guess }: UseGameContractProps) => {
           }
       }
     } catch (err: any) {
-      toast.error("Failed to submit guess. Please try again.", { closeOnClick: true });
+      showToast("error", "Failed to submit guess. Please try again.");
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -144,7 +144,6 @@ export const useGameContract = ({ guess }: UseGameContractProps) => {
       refetchHasPlayerGuessedCorrectly();
       refetchLetterStatusesData();
       refetchAllowance();
-      toast.success("Guess submitted successfully!", { closeOnClick: true });
     }
   }, [hasWaitedForGuess, refetchPlayerGuesses, refetchHasPlayerGuessedCorrectly, refetchLetterStatusesData]);
 

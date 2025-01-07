@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 import { formatEther } from "viem";
 import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { WordleTokenABI } from "../abis/WordleToken.abi";
 import { WORDLE_GAME_ADDRESS, WORDLE_TOKEN_ADDRESS } from "../config/constants";
+import { showToast } from "../utils/toast";
 
 export const useTokenContract = () => {
   const [hash, setHash] = useState<`0x${string}` | undefined>(undefined);
@@ -27,14 +27,15 @@ export const useTokenContract = () => {
     setIsLoading(true);
     try {
       const response = await writeContractAsync({
-        address: WORDLE_TOKEN_ADDRESS,
         abi: WordleTokenABI,
+        address: WORDLE_TOKEN_ADDRESS,
         functionName: "approve",
         args: [WORDLE_GAME_ADDRESS, BigInt(5 * 10 ** 18)]
       });
       setHash(response);
     } catch (err: any) {
-      toast.error("Failed to approve tokens. Please try again.", { closeOnClick: true });
+      showToast("error", "Failed to approve tokens. Please try again.");
+      console.error(err);
     } finally {
       setIsLoading(false);
     }
@@ -47,7 +48,6 @@ export const useTokenContract = () => {
   useEffect(() => {
     if (hasWaitedForApprove) {
       refetchAllowance();
-      toast.success("Tokens approved successfully!", { closeOnClick: true });
     }
   }, [hasWaitedForApprove, refetchAllowance]);
 

@@ -1,5 +1,5 @@
 import { Button, Stack } from "@mui/joy";
-import { toast } from "react-toastify";
+import { showToast } from "../../utils/toast";
 
 type GameApproveProps = {
   handleApproveTokens: () => void;
@@ -10,7 +10,7 @@ type GameApproveProps = {
 
 export const GameApprove = ({ handleApproveTokens, allowance, isLoadingToken, isLoadingGame }: GameApproveProps) => {
   const handleCheckAllowance = async () => {
-    toast.info(`Your allowance is: ${allowance} TKN.`, { closeOnClick: true });
+    showToast("info", `Your allowance is: ${allowance} TKN.`);
   };
   return (
     <Stack component="section" sx={{ flexDirection: "row", gap: 1 }}>
