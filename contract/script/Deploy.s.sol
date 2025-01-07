@@ -2,15 +2,16 @@
 pragma solidity ^0.8.0;
 
 import "forge-std/Script.sol";
+
 import "../contracts/WordleToken.sol";
 import "../contracts/WordleGame.sol";
 
 contract Deploy is Script {
 	function run() external {
 		// Load environment variables
-		uint256 deployerPrivateKey = vm.envUint("ADMIN_PRIVATE_KEY");
-		address admin = vm.envAddress("ADMIN_PUBLIC_KEY");
-		address player = vm.envAddress("PLAYER_PUBLIC_KEY");
+		uint256 deployerPrivateKey = vm.envUint("DEPLOYER_KEY");
+		address admin = vm.envAddress("ADMIN_KEY");
+		address player = vm.envAddress("PLAYER_KEY");
 
 		// Start broadcasting transactions
 		vm.startBroadcast(deployerPrivateKey);
@@ -23,12 +24,14 @@ contract Deploy is Script {
 		WordleGame game = new WordleGame(address(token));
 		console.log("Wordle Game deployed at:", address(game));
 
-		// Transfer tokens to the user's address
+		// Transfer tokens to the admin and player addresses (for testing purposes)
 		token.transfer(admin, 10 ether);
-		console.log("100 tokens transferred to user address:", admin);
-		token.transfer(player, 10 ether);
-		console.log("100 tokens transferred to user address:", player);
+		console.log("10 tokens transferred to admin address:", admin);
 
+		token.transfer(player, 10 ether);
+		console.log("10 tokens transferred to player address:", player);
+
+		// Stop broadcasting transactions
 		vm.stopBroadcast();
 	}
 }
