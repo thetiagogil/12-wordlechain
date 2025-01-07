@@ -44,6 +44,38 @@ contract WordleGameTest is Test {
 		);
 	}
 
+	function testChangeGameState() public {
+		vm.prank(player);
+		game.makeGuess("PLACE");
+		bool guessedCorrectly = game.getHasUserGuessedCorrectly(player);
+		assertFalse(
+			guessedCorrectly,
+			"User should not guess correctly for old word"
+		);
+
+		vm.prank(admin);
+		game.setWord("APPLE");
+
+		string[] memory previousGuesses = game.getUserGuesses(player);
+		assertEq(
+			previousGuesses.length,
+			0,
+			"Previous guesses should not persist for new word"
+		);
+		assertFalse(
+			guessedCorrectly,
+			"Previous game state should not persist for new word"
+		);
+
+		vm.prank(player);
+		game.makeGuess("APPLE");
+		guessedCorrectly = game.getHasUserGuessedCorrectly(player);
+		assertTrue(
+			guessedCorrectly,
+			"Player should guess the newly set word correctly"
+		);
+	}
+
 	function testMakeGuessWithInsufficientTokens() public {
 		vm.prank(playerWithoutTokens);
 
