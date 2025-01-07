@@ -11,19 +11,17 @@ import { useGameContract } from "../hooks/useGameContract";
 import { useTokenContract } from "../hooks/useTokenContract";
 
 export const GamePage = () => {
-  // States
   const [guess, setGuess] = useState<string>("");
 
-  // Hooks
-  const { address: userAddress } = useAccount();
-  const { handleApproveTokens, handleCheckAllowance, allowance, isLoading: isLoadingToken } = useTokenContract();
+  const { address: playerAddress } = useAccount();
+  const { handleApproveTokens, allowance, isLoading: isLoadingToken } = useTokenContract();
   const {
     handleSetWord,
     handleSubmitGuess,
     adminAddress,
-    getUserGuessesArray,
+    getPlayerGuessesArray,
     getLetterStatusesArray,
-    getHasUserGuessedCorrectly,
+    getHasPlayerGuessedCorrectly,
     isLoading: isLoadingGame
   } = useGameContract({ guess });
 
@@ -33,15 +31,14 @@ export const GamePage = () => {
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
         <GameGuess
           guess={guess}
-          getUserGuessesArray={getUserGuessesArray}
+          getPlayerGuessesArray={getPlayerGuessesArray}
           getLetterStatusesArray={getLetterStatusesArray}
         />
-        {userAddress === adminAddress && (
+        {playerAddress === adminAddress && (
           <GameAdmin handleSetWord={handleSetWord} isLoading={isLoadingToken || isLoadingGame} />
         )}
         <GameApprove
           handleApproveTokens={handleApproveTokens}
-          handleCheckAllowance={handleCheckAllowance}
           allowance={allowance}
           isLoadingToken={isLoadingToken}
           isLoadingGame={isLoadingGame}
@@ -51,7 +48,7 @@ export const GamePage = () => {
           setGuess={setGuess}
           handleSubmitGuess={handleSubmitGuess}
           allowance={allowance}
-          getHasUserGuessedCorrectly={getHasUserGuessedCorrectly}
+          getHasPlayerGuessedCorrectly={getHasPlayerGuessedCorrectly}
           isLoadingGame={isLoadingGame}
         />
       </Box>

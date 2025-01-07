@@ -51,10 +51,10 @@ export const WordleGameABI = [
   },
   {
     type: "function",
-    name: "getHasUserGuessedCorrectly",
+    name: "getHasPlayerGuessedCorrectly",
     inputs: [
       {
-        name: "user",
+        name: "player",
         type: "address",
         internalType: "address"
       }
@@ -73,7 +73,7 @@ export const WordleGameABI = [
     name: "getLetterStatuses",
     inputs: [
       {
-        name: "user",
+        name: "player",
         type: "address",
         internalType: "address"
       },
@@ -94,10 +94,10 @@ export const WordleGameABI = [
   },
   {
     type: "function",
-    name: "getUserGuesses",
+    name: "getPlayerGuesses",
     inputs: [
       {
-        name: "user",
+        name: "player",
         type: "address",
         internalType: "address"
       }
@@ -116,7 +116,7 @@ export const WordleGameABI = [
     name: "makeGuess",
     inputs: [
       {
-        name: "userGuess",
+        name: "playerGuess",
         type: "string",
         internalType: "string"
       }
@@ -146,6 +146,19 @@ export const WordleGameABI = [
         name: "",
         type: "address",
         internalType: "address"
+      }
+    ],
+    stateMutability: "view"
+  },
+  {
+    type: "function",
+    name: "wordId",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256"
       }
     ],
     stateMutability: "view"

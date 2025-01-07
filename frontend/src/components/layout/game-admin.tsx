@@ -9,22 +9,30 @@ type GameAdminProps = {
 export const GameAdmin = ({ handleSetWord, isLoading }: GameAdminProps) => {
   const [word, setWord] = useState<string>("");
 
+  const handleOnButtonClick = () => {
+    if (word.length === 5) {
+      handleSetWord(word);
+      setWord("");
+    }
+  };
+
   return (
     <Stack component="section" sx={{ flexDirection: "row", gap: 1 }}>
       <Input
         size="lg"
-        placeholder="Enter a word..."
+        placeholder="Enter a 5 letter word..."
         value={word}
         onChange={e => setWord(e.target.value.toUpperCase())}
         disabled={isLoading}
+        sx={{ width: "60%" }}
       />
       <Button
         size="lg"
-        fullWidth
-        onClick={() => handleSetWord(word)}
+        onClick={handleOnButtonClick}
         color="neutral"
         loading={isLoading}
         disabled={isLoading || word.length !== 5}
+        sx={{ width: "40%" }}
       >
         Set New Word
       </Button>

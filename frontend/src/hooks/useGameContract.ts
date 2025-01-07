@@ -10,66 +10,64 @@ type UseGameContractProps = {
 };
 
 export const useGameContract = ({ guess }: UseGameContractProps) => {
-  // States
   const [hash, setHash] = useState<`0x${string}` | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // Hooks
-  const { address: userAddress } = useAccount();
+  const { address: playerAddress } = useAccount();
   const { writeContractAsync } = useWriteContract();
   const { refetchAllowance } = useTokenContract();
 
-  // Read Admin Address
+  // Handle check admin address
   const { data: adminAddress } = useReadContract({
     abi: WordleGameABI,
     address: WORDLE_GAME_ADDRESS,
     functionName: "admin"
   });
 
-  // Read User Guesses
+  // Handle check player guesses
   const {
-    data: getUserGuesses,
-    refetch: refetchUserGuesses,
-    isLoading: isLoadingGuesses
+    data: getPlayerGuesses,
+    refetch: refetchPlayerGuesses,
+    isLoading: isLoadingPlayerGuesses
   } = useReadContract({
     abi: WordleGameABI,
     address: WORDLE_GAME_ADDRESS,
-    functionName: "getUserGuesses",
-    args: [userAddress as `0x${string}`]
+    functionName: "getPlayerGuesses",
+    args: [playerAddress as `0x${string}`]
   }) as { data: string[]; refetch: () => void; isLoading: boolean };
 
-  const getUserGuessesArray: string[] = Array.isArray(getUserGuesses) ? getUserGuesses : [];
+  const getPlayerGuessesArray: string[] = Array.isArray(getPlayerGuesses) ? getPlayerGuesses : [];
 
-  // Read Has User Guessed Correctly
+  // Handle check if player has guessed correctly
   const {
-    data: getHasUserGuessedCorrectly,
-    refetch: refetchCorrect,
-    isLoading: isLoadingCorrect
+    data: getHasPlayerGuessedCorrectly,
+    refetch: refetchHasPlayerGuessedCorrectly,
+    isLoading: isLoadingHasPlayerGuessedCorrectly
   } = useReadContract({
     abi: WordleGameABI,
     address: WORDLE_GAME_ADDRESS,
-    functionName: "getHasUserGuessedCorrectly",
-    args: [userAddress as `0x${string}`]
+    functionName: "getHasPlayerGuessedCorrectly",
+    args: [playerAddress as `0x${string}`]
   }) as { data: boolean; refetch: () => void; isLoading: boolean };
 
-  // Read Letter Statuses
+  // Handle check letter statuses
   const getLetterStatusesMap =
-    getUserGuessesArray.length > 0
-      ? Array.from({ length: getUserGuessesArray.length }).map(
+    getPlayerGuessesArray.length > 0
+      ? Array.from({ length: getPlayerGuessesArray.length }).map(
           (_, index) =>
             ({
               abi: WordleGameABI,
               address: WORDLE_GAME_ADDRESS,
               functionName: "getLetterStatuses",
-              args: [userAddress as `0x${string}`, BigInt(index)]
+              args: [playerAddress as `0x${string}`, BigInt(index)]
             }) as const
         )
       : [];
 
   const {
     data: getLetterStatusesData,
-    refetch: refetchLetterStatuses,
-    isLoading: isLoadingStatusesData
+    refetch: refetchLetterStatusesData,
+    isLoading: isLoadingLetterStatusesData
   } = useReadContracts({
     contracts: getLetterStatusesMap
   });
@@ -77,7 +75,7 @@ export const useGameContract = ({ guess }: UseGameContractProps) => {
   const getLetterStatusesArray =
     getLetterStatusesData?.map(item => (item.result ? { data: Array.from(item.result) } : { data: [] })) || [];
 
-  // Handle Set New Word
+  // Handle set new word by admin
   const handleSetWord = async (newWord: string) => {
     if (newWord.length !== 5) {
       toast.error("Word must be 5 letters!", { closeOnClick: true });
@@ -102,7 +100,7 @@ export const useGameContract = ({ guess }: UseGameContractProps) => {
     }
   };
 
-  // Handle Submit Guess Button
+  // Handle submit guess
   const handleSubmitGuess = async (allowance: number, onSuccess?: () => void) => {
     setIsLoading(true);
     try {
@@ -110,10 +108,10 @@ export const useGameContract = ({ guess }: UseGameContractProps) => {
         case allowance <= 0:
           toast.error("You need allowance to play the game.", { closeOnClick: true });
           break;
-        case getHasUserGuessedCorrectly:
+        case getHasPlayerGuessedCorrectly:
           toast.error("You have already guessed correctly!", { closeOnClick: true });
           break;
-        case Array.isArray(getUserGuesses) && getUserGuesses.length >= 5:
+        case Array.isArray(getPlayerGuesses) && getPlayerGuesses.length >= 5:
           toast.error("You already exceeded the limit play tries for today!", { closeOnClick: true });
           break;
         default:
@@ -136,28 +134,28 @@ export const useGameContract = ({ guess }: UseGameContractProps) => {
     }
   };
 
-  // Handle Wait For Transaction Receipt
+  // Handle wait for make guess contract function receipt
   const { isSuccess: hasWaitedForGuess } = useWaitForTransactionReceipt({ hash });
 
-  // Trigger refetch
+  // Trigger refetch after makeGuess contract function has waited
   useEffect(() => {
     if (hasWaitedForGuess) {
-      refetchUserGuesses();
-      refetchCorrect();
-      refetchLetterStatuses();
+      refetchPlayerGuesses();
+      refetchHasPlayerGuessedCorrectly();
+      refetchLetterStatusesData();
       refetchAllowance();
       toast.success("Guess submitted successfully!", { closeOnClick: true });
     }
-  }, [hasWaitedForGuess, refetchUserGuesses, refetchCorrect, refetchLetterStatuses]);
+  }, [hasWaitedForGuess, refetchPlayerGuesses, refetchHasPlayerGuessedCorrectly, refetchLetterStatusesData]);
 
   return {
     handleSetWord,
     handleSubmitGuess,
-    hasWaitedForGuess,
     adminAddress,
-    getUserGuessesArray,
+    getPlayerGuessesArray,
     getLetterStatusesArray,
-    getHasUserGuessedCorrectly,
-    isLoading: isLoading || isLoadingGuesses || isLoadingCorrect || isLoadingStatusesData
+    getHasPlayerGuessedCorrectly,
+    hasWaitedForGuess,
+    isLoading: isLoading || isLoadingPlayerGuesses || isLoadingHasPlayerGuessedCorrectly || isLoadingLetterStatusesData
   };
 };
