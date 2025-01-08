@@ -5,8 +5,9 @@ type GameKeyboardProps = {
   setGuess: (value: string | ((value: string) => string)) => void;
   handleSubmitGuess: (allowance: number, onSuccess?: () => void) => void;
   allowance: number;
-  getHasPlayerGuessedCorrectly: boolean;
+  hasPlayerGuessedCorrectly: boolean;
   isLoadingGame: boolean;
+  isDisabled: boolean;
 };
 
 export const GameKeyboard = ({
@@ -14,15 +15,15 @@ export const GameKeyboard = ({
   setGuess,
   handleSubmitGuess,
   allowance,
-  getHasPlayerGuessedCorrectly,
-  isLoadingGame
+  hasPlayerGuessedCorrectly,
+  isLoadingGame,
+  isDisabled
 }: GameKeyboardProps) => {
   const ROW1 = "QWERTYUIOP".split("");
   const ROW2 = "ASDFGHJKL".split("");
   const ROW3 = "ZXCVBNM".split("");
   const lettersSize = { width: { xs: 32, md: 40 }, height: 55, p: { xs: 1, sm: "auto" } };
   const actionsSize = { width: { xs: 52, md: 62 }, height: 55 };
-  const isDisabled = allowance <= 0 || getHasPlayerGuessedCorrectly || isLoadingGame ? true : false;
 
   const handleOnLetterClick = (letter: string) => {
     if (guess.length < 5) setGuess(prev => prev + letter);
@@ -40,7 +41,7 @@ export const GameKeyboard = ({
             key={letter}
             onClick={() => handleOnLetterClick(letter)}
             color="neutral"
-            disabled={isDisabled}
+            disabled={isDisabled || allowance <= 0 || hasPlayerGuessedCorrectly}
             sx={lettersSize}
           >
             {letter}
@@ -53,7 +54,7 @@ export const GameKeyboard = ({
             key={letter}
             onClick={() => handleOnLetterClick(letter)}
             color="neutral"
-            disabled={isDisabled}
+            disabled={isDisabled || allowance <= 0 || hasPlayerGuessedCorrectly}
             sx={lettersSize}
           >
             {letter}
@@ -69,7 +70,7 @@ export const GameKeyboard = ({
             key={letter}
             onClick={() => handleOnLetterClick(letter)}
             color="neutral"
-            disabled={isDisabled}
+            disabled={isDisabled || allowance <= 0 || hasPlayerGuessedCorrectly}
             sx={lettersSize}
           >
             {letter}

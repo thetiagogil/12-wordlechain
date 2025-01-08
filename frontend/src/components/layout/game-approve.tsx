@@ -5,10 +5,10 @@ type GameApproveProps = {
   handleApproveTokens: () => void;
   allowance: number;
   isLoadingToken: boolean;
-  isLoadingGame: boolean;
+  isDisabled: boolean;
 };
 
-export const GameApprove = ({ handleApproveTokens, allowance, isLoadingToken, isLoadingGame }: GameApproveProps) => {
+export const GameApprove = ({ handleApproveTokens, allowance, isLoadingToken, isDisabled }: GameApproveProps) => {
   const handleCheckAllowance = async () => {
     showToast("info", `Your allowance is: ${allowance} TKN.`);
   };
@@ -18,13 +18,13 @@ export const GameApprove = ({ handleApproveTokens, allowance, isLoadingToken, is
         fullWidth
         onClick={handleApproveTokens}
         color="success"
-        disabled={allowance > 0 || isLoadingGame}
+        disabled={isDisabled || allowance > 0}
         loading={isLoadingToken}
         sx={{ bgcolor: "success.700" }}
       >
         {allowance > 0 ? "Approved" : "Approve Tokens"}
       </Button>
-      <Button fullWidth onClick={handleCheckAllowance} color="neutral" disabled={isLoadingToken || isLoadingGame}>
+      <Button fullWidth onClick={handleCheckAllowance} color="neutral" disabled={isDisabled}>
         Check Allowance
       </Button>
     </Stack>

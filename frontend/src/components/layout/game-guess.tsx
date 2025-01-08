@@ -4,14 +4,14 @@ import { LETTER_BG_COLORS, NUMBER_OF_GUESSES } from "../../config/constants";
 
 type GameGuessBoxProps = {
   guess: string;
-  getPlayerGuessesArray: string[];
-  getLetterStatusesArray: { data: number[] }[];
+  playerGuessesArray: string[];
+  letterStatusesArray: { data: number[] }[];
 };
 
-export const GameGuess = ({ guess, getPlayerGuessesArray, getLetterStatusesArray }: GameGuessBoxProps) => {
+export const GameGuess = ({ guess, playerGuessesArray, letterStatusesArray }: GameGuessBoxProps) => {
   const getPlayerGuesses = () => {
     // This adds the rows of the player's previous guesses
-    const guessesToShow = [...getPlayerGuessesArray];
+    const guessesToShow = [...playerGuessesArray];
     // This adds the row where the player is typing the current guess
     if (guessesToShow.length < NUMBER_OF_GUESSES) {
       guessesToShow.push(guess.padEnd(5, " "));
@@ -38,8 +38,8 @@ export const GameGuess = ({ guess, getPlayerGuessesArray, getLetterStatusesArray
       {getPlayerGuesses().map((rowGuess: string, rowIndex: number) => (
         <Grid container key={rowIndex} sx={{ justifyContent: "center", gap: 1 }}>
           {Array.from(rowGuess).map((letter, colIndex) => {
-            const isCurrentRow = rowIndex === getPlayerGuessesArray.length;
-            const backgroundColor = getLettersBgColor(rowIndex, colIndex, getLetterStatusesArray, LETTER_BG_COLORS);
+            const isCurrentRow = rowIndex === playerGuessesArray.length;
+            const backgroundColor = getLettersBgColor(rowIndex, colIndex, letterStatusesArray, LETTER_BG_COLORS);
             return (
               <Box
                 key={colIndex}
