@@ -1,6 +1,7 @@
 import { Box, Grid, Stack } from "@mui/joy";
 import { motion } from "framer-motion";
-import { LETTER_BG_COLORS, NUMBER_OF_GUESSES } from "../../config/constants";
+import { NUMBER_OF_GUESSES } from "../../config/constants";
+import { LETTER_BG_COLORS } from "../../utils/colors";
 
 type GameGuessBoxProps = {
   guess: string;

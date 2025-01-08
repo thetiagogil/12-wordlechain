@@ -1,4 +1,6 @@
 import { Button, Stack } from "@mui/joy";
+import { useMemo } from "react";
+import { LETTER_BG_COLORS } from "../../utils/colors";
 
 type GameKeyboardProps = {
   guess: string;
@@ -6,6 +8,8 @@ type GameKeyboardProps = {
   handleSubmitGuess: (allowance: number, onSuccess?: () => void) => void;
   allowance: number;
   hasPlayerGuessedCorrectly: boolean;
+  playerGuessesArray: string[];
+  letterStatusesArray: { data: number[] }[];
   isLoadingGame: boolean;
   isDisabled: boolean;
 };
@@ -16,6 +20,8 @@ export const GameKeyboard = ({
   handleSubmitGuess,
   allowance,
   hasPlayerGuessedCorrectly,
+  playerGuessesArray,
+  letterStatusesArray,
   isLoadingGame,
   isDisabled
 }: GameKeyboardProps) => {
@@ -33,49 +39,63 @@ export const GameKeyboard = ({
     if (guess.length > 0) setGuess(prev => prev.slice(0, -1));
   };
 
+  const letterButton = (letter: string) => {
+    const getLetterStatusesForKeyboard = (guessesArray: string[], statusesArray: { data: number[] }[]) => {
+      const letterStatuses = {} as { [key: string]: number };
+
+      // Iterate over each guess
+      guessesArray.forEach((guess, guessIndex) => {
+        const statuses = statusesArray[guessIndex]?.data || [];
+        // Iterate over each guess letter
+        guess.split("").forEach((letter, letterIndex) => {
+          const currentStatus = statuses[letterIndex];
+          // Add letter with corresponding status to the new array
+          if (currentStatus >= (letterStatuses[letter] || 0)) {
+            letterStatuses[letter] = currentStatus;
+          }
+        });
+      });
+
+      return letterStatuses;
+    };
+
+    const useLetterStatusesForKeyboard = useMemo(() => {
+      return getLetterStatusesForKeyboard(playerGuessesArray, letterStatusesArray);
+    }, [playerGuessesArray, letterStatusesArray]);
+
+    const bgcolor = LETTER_BG_COLORS[useLetterStatusesForKeyboard[letter]] || "neutral.700";
+
+    return (
+      <Button
+        key={letter}
+        onClick={() => handleOnLetterClick(letter)}
+        color="neutral"
+        disabled={isDisabled || allowance <= 0 || hasPlayerGuessedCorrectly}
+        sx={{
+          ...lettersSize,
+          bgcolor,
+          fontWeight: "bold",
+          ":hover": { bgcolor, borderColor: "white" }
+        }}
+      >
+        {letter}
+      </Button>
+    );
+  };
+
   return (
     <Stack component="section" sx={{ justifyContent: "center", gap: 0.5, width: "100%" }}>
       <Stack sx={{ justifyContent: "center", flexDirection: "row", gap: 0.5 }}>
-        {ROW1.map(letter => (
-          <Button
-            key={letter}
-            onClick={() => handleOnLetterClick(letter)}
-            color="neutral"
-            disabled={isDisabled || allowance <= 0 || hasPlayerGuessedCorrectly}
-            sx={lettersSize}
-          >
-            {letter}
-          </Button>
-        ))}
+        {ROW1.map(letter => letterButton(letter))}
       </Stack>
       <Stack sx={{ justifyContent: "center", flexDirection: "row", gap: 0.5 }}>
-        {ROW2.map(letter => (
-          <Button
-            key={letter}
-            onClick={() => handleOnLetterClick(letter)}
-            color="neutral"
-            disabled={isDisabled || allowance <= 0 || hasPlayerGuessedCorrectly}
-            sx={lettersSize}
-          >
-            {letter}
-          </Button>
-        ))}
+        {ROW2.map(letter => letterButton(letter))}
       </Stack>
       <Stack sx={{ justifyContent: "center", flexDirection: "row", gap: 0.5 }}>
         <Button onClick={handleDelete} color="neutral" disabled={isDisabled || guess.length <= 0} sx={actionsSize}>
           Delete
         </Button>
-        {ROW3.map(letter => (
-          <Button
-            key={letter}
-            onClick={() => handleOnLetterClick(letter)}
-            color="neutral"
-            disabled={isDisabled || allowance <= 0 || hasPlayerGuessedCorrectly}
-            sx={lettersSize}
-          >
-            {letter}
-          </Button>
-        ))}
+        {ROW3.map(letter => letterButton(letter))}
         <Button
           onClick={() =>
             handleSubmitGuess(allowance, () => {

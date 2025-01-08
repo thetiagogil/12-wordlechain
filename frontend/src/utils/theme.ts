@@ -4,7 +4,6 @@ export const theme = extendTheme({
   colorSchemes: {
     dark: {
       palette: {
-        primary: {},
         background: {
           body: "#121213"
         }
@@ -19,7 +18,10 @@ export const theme = extendTheme({
           border: "1px solid",
           borderRadius: "2px",
           borderColor: theme.vars.palette.neutral[600],
-          transition: "0.3s"
+          transition: "0.3s",
+          ":hover": {
+            borderColor: "white"
+          }
         })
       }
     },
@@ -29,7 +31,10 @@ export const theme = extendTheme({
           border: "1px solid",
           borderRadius: "2px",
           borderColor: theme.vars.palette.neutral[600],
-          transition: "0.3s"
+          transition: "0.3s",
+          ":hover": {
+            borderColor: "white"
+          }
         })
       }
     }

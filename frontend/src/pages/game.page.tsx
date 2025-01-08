@@ -51,6 +51,8 @@ export const GamePage = () => {
         handleSubmitGuess={handleSubmitGuess}
         allowance={allowance}
         hasPlayerGuessedCorrectly={hasPlayerGuessedCorrectly}
+        playerGuessesArray={playerGuessesArray}
+        letterStatusesArray={letterStatusesArray}
         isLoadingGame={isLoadingGame}
         isDisabled={isDisabled}
       />
