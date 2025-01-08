@@ -17,9 +17,8 @@ export const GameAdmin = ({ handleSetWord, isLoading }: GameAdminProps) => {
   };
 
   return (
-    <Stack component="section" sx={{ flexDirection: "row", gap: 1 }}>
+    <Stack component="section" sx={{ flexDirection: "row", gap: 1, width: "100%" }}>
       <Input
-        size="lg"
         placeholder="Enter a 5 letter word..."
         value={word}
         onChange={e => setWord(e.target.value.toUpperCase())}
@@ -27,7 +26,6 @@ export const GameAdmin = ({ handleSetWord, isLoading }: GameAdminProps) => {
         sx={{ width: "60%" }}
       />
       <Button
-        size="lg"
         onClick={handleOnButtonClick}
         color="neutral"
         loading={isLoading}

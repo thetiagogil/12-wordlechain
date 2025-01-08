@@ -1,4 +1,3 @@
-import { Box } from "@mui/joy";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useState } from "react";
 import { useAccount } from "wagmi";
@@ -28,30 +27,28 @@ export const GamePage = () => {
   return (
     <MainContainer>
       <ConnectButton />
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        <GameGuess
-          guess={guess}
-          getPlayerGuessesArray={getPlayerGuessesArray}
-          getLetterStatusesArray={getLetterStatusesArray}
-        />
-        {playerAddress === adminAddress && (
-          <GameAdmin handleSetWord={handleSetWord} isLoading={isLoadingToken || isLoadingGame} />
-        )}
-        <GameApprove
-          handleApproveTokens={handleApproveTokens}
-          allowance={allowance}
-          isLoadingToken={isLoadingToken}
-          isLoadingGame={isLoadingGame}
-        />
-        <GameKeyboard
-          guess={guess}
-          setGuess={setGuess}
-          handleSubmitGuess={handleSubmitGuess}
-          allowance={allowance}
-          getHasPlayerGuessedCorrectly={getHasPlayerGuessedCorrectly}
-          isLoadingGame={isLoadingGame}
-        />
-      </Box>
+      <GameGuess
+        guess={guess}
+        getPlayerGuessesArray={getPlayerGuessesArray}
+        getLetterStatusesArray={getLetterStatusesArray}
+      />
+      {playerAddress === adminAddress && (
+        <GameAdmin handleSetWord={handleSetWord} isLoading={isLoadingToken || isLoadingGame} />
+      )}
+      <GameApprove
+        handleApproveTokens={handleApproveTokens}
+        allowance={allowance}
+        isLoadingToken={isLoadingToken}
+        isLoadingGame={isLoadingGame}
+      />
+      <GameKeyboard
+        guess={guess}
+        setGuess={setGuess}
+        handleSubmitGuess={handleSubmitGuess}
+        allowance={allowance}
+        getHasPlayerGuessedCorrectly={getHasPlayerGuessedCorrectly}
+        isLoadingGame={isLoadingGame}
+      />
     </MainContainer>
   );
 };

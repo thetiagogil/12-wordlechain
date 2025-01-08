@@ -20,8 +20,8 @@ export const GameKeyboard = ({
   const ROW1 = "QWERTYUIOP".split("");
   const ROW2 = "ASDFGHJKL".split("");
   const ROW3 = "ZXCVBNM".split("");
-  const lettersSize = { width: 40, height: 55 };
-  const actionsSize = { width: 62, height: 55 };
+  const lettersSize = { width: { xs: 32, md: 40 }, height: 55, p: { xs: 1, sm: "auto" } };
+  const actionsSize = { width: { xs: 52, md: 62 }, height: 55 };
   const isDisabled = allowance <= 0 || getHasPlayerGuessedCorrectly || isLoadingGame ? true : false;
 
   const handleOnLetterClick = (letter: string) => {
@@ -33,7 +33,7 @@ export const GameKeyboard = ({
   };
 
   return (
-    <Stack component="section" sx={{ justifyContent: "center", gap: 0.5 }}>
+    <Stack component="section" sx={{ justifyContent: "center", gap: 0.5, width: "100%" }}>
       <Stack sx={{ justifyContent: "center", flexDirection: "row", gap: 0.5 }}>
         {ROW1.map(letter => (
           <Button
@@ -86,7 +86,7 @@ export const GameKeyboard = ({
           loading={isLoadingGame}
           sx={{ ...actionsSize, bgcolor: "success.700" }}
         >
-          Submit
+          Enter
         </Button>
       </Stack>
     </Stack>
