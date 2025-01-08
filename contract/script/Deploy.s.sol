@@ -24,6 +24,11 @@ contract Deploy is Script {
 		WordleGame game = new WordleGame(address(token));
 		console.log("Wordle Game deployed at:", address(game));
 
+		// Set an initial word
+		string memory firstWord = "MANGO";
+		game.setWord(firstWord);
+		console.log("Initial word set to:", firstWord);
+
 		// Transfer tokens to the admin and player addresses (for testing purposes)
 		token.transfer(admin, 10 ether);
 		console.log("10 tokens transferred to admin address:", admin);
