@@ -5,7 +5,7 @@ type GameKeyboardProps = {
   setGuess: (value: string | ((value: string) => string)) => void;
   handleSubmitGuess: (allowance: number, onSuccess?: () => void) => void;
   allowance: number;
-  getHasUserGuessedCorrectly: boolean;
+  getHasPlayerGuessedCorrectly: boolean;
   isLoadingGame: boolean;
 };
 
@@ -14,14 +14,17 @@ export const GameKeyboard = ({
   setGuess,
   handleSubmitGuess,
   allowance,
-  getHasUserGuessedCorrectly,
+  getHasPlayerGuessedCorrectly,
   isLoadingGame
 }: GameKeyboardProps) => {
   const ROW1 = "QWERTYUIOP".split("");
   const ROW2 = "ASDFGHJKL".split("");
   const ROW3 = "ZXCVBNM".split("");
+  const lettersSize = { width: 40, height: 55 };
+  const actionsSize = { width: 62, height: 55 };
+  const isDisabled = allowance <= 0 || getHasPlayerGuessedCorrectly || isLoadingGame ? true : false;
 
-  const handleLetterClick = (letter: string) => {
+  const handleOnLetterClick = (letter: string) => {
     if (guess.length < 5) setGuess(prev => prev + letter);
   };
 
@@ -29,17 +32,13 @@ export const GameKeyboard = ({
     if (guess.length > 0) setGuess(prev => prev.slice(0, -1));
   };
 
-  const lettersSize = { width: 40, height: 55 };
-  const actionsSize = { width: 62, height: 55 };
-  const isDisabled = allowance <= 0 || getHasUserGuessedCorrectly || isLoadingGame ? true : false;
-
   return (
     <Stack component="section" sx={{ justifyContent: "center", gap: 0.5 }}>
       <Stack sx={{ justifyContent: "center", flexDirection: "row", gap: 0.5 }}>
         {ROW1.map(letter => (
           <Button
             key={letter}
-            onClick={() => handleLetterClick(letter)}
+            onClick={() => handleOnLetterClick(letter)}
             color="neutral"
             disabled={isDisabled}
             sx={lettersSize}
@@ -52,7 +51,7 @@ export const GameKeyboard = ({
         {ROW2.map(letter => (
           <Button
             key={letter}
-            onClick={() => handleLetterClick(letter)}
+            onClick={() => handleOnLetterClick(letter)}
             color="neutral"
             disabled={isDisabled}
             sx={lettersSize}
@@ -68,7 +67,7 @@ export const GameKeyboard = ({
         {ROW3.map(letter => (
           <Button
             key={letter}
-            onClick={() => handleLetterClick(letter)}
+            onClick={() => handleOnLetterClick(letter)}
             color="neutral"
             disabled={isDisabled}
             sx={lettersSize}

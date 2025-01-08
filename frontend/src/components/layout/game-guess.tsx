@@ -4,16 +4,15 @@ import { LETTER_BG_COLORS, NUMBER_OF_GUESSES } from "../../config/constants";
 
 type GameGuessBoxProps = {
   guess: string;
-  getUserGuessesArray: string[];
+  getPlayerGuessesArray: string[];
   getLetterStatusesArray: { data: number[] }[];
 };
 
-export const GameGuess = ({ guess, getUserGuessesArray, getLetterStatusesArray }: GameGuessBoxProps) => {
-  // Function to Get User Guesses
-  const getGuesses = () => {
-    // This adds the rows of the user's previous guesses
-    const guessesToShow = [...getUserGuessesArray];
-    // This adds the row where the user is typing the current guess
+export const GameGuess = ({ guess, getPlayerGuessesArray, getLetterStatusesArray }: GameGuessBoxProps) => {
+  const getPlayerGuesses = () => {
+    // This adds the rows of the player's previous guesses
+    const guessesToShow = [...getPlayerGuessesArray];
+    // This adds the row where the player is typing the current guess
     if (guessesToShow.length < NUMBER_OF_GUESSES) {
       guessesToShow.push(guess.padEnd(5, " "));
     }
@@ -24,7 +23,6 @@ export const GameGuess = ({ guess, getUserGuessesArray, getLetterStatusesArray }
     return guessesToShow;
   };
 
-  // Function To Get Letters Background Color Based on Correctness
   const getLettersBgColor = (
     rowIndex: number,
     colIndex: number,
@@ -37,10 +35,10 @@ export const GameGuess = ({ guess, getUserGuessesArray, getLetterStatusesArray }
 
   return (
     <Stack component="section" sx={{ gap: 1 }}>
-      {getGuesses().map((rowGuess: string, rowIndex: number) => (
+      {getPlayerGuesses().map((rowGuess: string, rowIndex: number) => (
         <Grid container key={rowIndex} sx={{ justifyContent: "center", gap: 1 }}>
           {Array.from(rowGuess).map((letter, colIndex) => {
-            const isCurrentRow = rowIndex === getUserGuessesArray.length;
+            const isCurrentRow = rowIndex === getPlayerGuessesArray.length;
             const backgroundColor = getLettersBgColor(rowIndex, colIndex, getLetterStatusesArray, LETTER_BG_COLORS);
             return (
               <Box

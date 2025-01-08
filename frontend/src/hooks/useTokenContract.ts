@@ -1,66 +1,58 @@
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 import { formatEther } from "viem";
 import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { WordleTokenABI } from "../abis/WordleToken.abi";
 import { WORDLE_GAME_ADDRESS, WORDLE_TOKEN_ADDRESS } from "../config/constants";
+import { showToast } from "../utils/toast";
 
 export const useTokenContract = () => {
-  // States
   const [hash, setHash] = useState<`0x${string}` | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // Hooks
-  const { address: userAddress } = useAccount();
+  const { address: playerAddress } = useAccount();
   const { writeContractAsync } = useWriteContract();
 
-  // Read Allowance
+  // Handle check allowance
   const { data, refetch: refetchAllowance } = useReadContract({
     abi: WordleTokenABI,
     address: WORDLE_TOKEN_ADDRESS,
     functionName: "allowance",
-    args: [userAddress as `0x${string}`, WORDLE_GAME_ADDRESS]
+    args: [playerAddress as `0x${string}`, WORDLE_GAME_ADDRESS]
   });
 
   const allowance = data ? Number(formatEther(data)) : 0;
 
-  // Handle Approve Tokens Button
+  // Handle approve tokens
   const handleApproveTokens = async () => {
     setIsLoading(true);
     try {
       const response = await writeContractAsync({
-        address: WORDLE_TOKEN_ADDRESS,
         abi: WordleTokenABI,
+        address: WORDLE_TOKEN_ADDRESS,
         functionName: "approve",
         args: [WORDLE_GAME_ADDRESS, BigInt(5 * 10 ** 18)]
       });
       setHash(response);
     } catch (err: any) {
-      toast.error("Failed to approve tokens. Please try again.", { closeOnClick: true });
+      showToast("error", "Failed to approve tokens. Please try again.");
+      console.error(err);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Handle Wait For Transaction Receipt
+  // Handle wait for approve contract function receipt
   const { isSuccess: hasWaitedForApprove } = useWaitForTransactionReceipt({ hash });
 
-  // Handle Check Allowance Button
-  const handleCheckAllowance = async () => {
-    toast.info(`Your allowance is: ${allowance} TKN.`, { closeOnClick: true });
-  };
-
-  // Trigger refetch
+  // Trigger refetch after approve contract function has waited
   useEffect(() => {
     if (hasWaitedForApprove) {
       refetchAllowance();
-      toast.success("Tokens approved successfully!", { closeOnClick: true });
     }
   }, [hasWaitedForApprove, refetchAllowance]);
 
   return {
     handleApproveTokens,
-    handleCheckAllowance,
     refetchAllowance,
     allowance,
     isLoading

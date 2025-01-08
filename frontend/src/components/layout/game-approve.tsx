@@ -1,20 +1,17 @@
 import { Button, Stack } from "@mui/joy";
+import { showToast } from "../../utils/toast";
 
 type GameApproveProps = {
   handleApproveTokens: () => void;
-  handleCheckAllowance: () => void;
   allowance: number;
   isLoadingToken: boolean;
   isLoadingGame: boolean;
 };
 
-export const GameApprove = ({
-  handleApproveTokens,
-  handleCheckAllowance,
-  allowance,
-  isLoadingToken,
-  isLoadingGame
-}: GameApproveProps) => {
+export const GameApprove = ({ handleApproveTokens, allowance, isLoadingToken, isLoadingGame }: GameApproveProps) => {
+  const handleCheckAllowance = async () => {
+    showToast("info", `Your allowance is: ${allowance} TKN.`);
+  };
   return (
     <Stack component="section" sx={{ flexDirection: "row", gap: 1 }}>
       <Button
