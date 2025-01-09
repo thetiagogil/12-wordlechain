@@ -34,7 +34,7 @@ export const GameGuess = ({ guess, getPlayerGuessesArray, getLetterStatusesArray
   };
 
   return (
-    <Stack component="section" sx={{ gap: 1 }}>
+    <Stack component="section" sx={{ gap: 1, width: "100%" }}>
       {getPlayerGuesses().map((rowGuess: string, rowIndex: number) => (
         <Grid container key={rowIndex} sx={{ justifyContent: "center", gap: 1 }}>
           {Array.from(rowGuess).map((letter, colIndex) => {
@@ -50,14 +50,14 @@ export const GameGuess = ({ guess, getPlayerGuessesArray, getLetterStatusesArray
                 sx={{
                   color: "#F8F8ED",
                   backgroundColor,
-                  height: 60,
-                  width: 60,
+                  height: { xs: 56, sm: 64 },
+                  width: { xs: 56, sm: 64 },
                   border: "1px solid",
                   borderColor: "neutral.700",
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  fontSize: 32,
+                  fontSize: { xs: 28, sm: 32 },
                   fontWeight: "bold"
                 }}
               >

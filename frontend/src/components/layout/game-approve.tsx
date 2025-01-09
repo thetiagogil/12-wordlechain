@@ -13,9 +13,8 @@ export const GameApprove = ({ handleApproveTokens, allowance, isLoadingToken, is
     showToast("info", `Your allowance is: ${allowance} TKN.`);
   };
   return (
-    <Stack component="section" sx={{ flexDirection: "row", gap: 1 }}>
+    <Stack component="section" sx={{ flexDirection: "row", gap: 1, width: "100%" }}>
       <Button
-        size="lg"
         fullWidth
         onClick={handleApproveTokens}
         color="success"
@@ -25,13 +24,7 @@ export const GameApprove = ({ handleApproveTokens, allowance, isLoadingToken, is
       >
         {allowance > 0 ? "Approved" : "Approve Tokens"}
       </Button>
-      <Button
-        size="lg"
-        fullWidth
-        onClick={handleCheckAllowance}
-        color="neutral"
-        disabled={isLoadingToken || isLoadingGame}
-      >
+      <Button fullWidth onClick={handleCheckAllowance} color="neutral" disabled={isLoadingToken || isLoadingGame}>
         Check Allowance
       </Button>
     </Stack>
