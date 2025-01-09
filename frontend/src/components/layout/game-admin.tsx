@@ -3,10 +3,11 @@ import { useState } from "react";
 
 type GameAdminProps = {
   handleSetWord: (word: string) => void;
-  isLoading: boolean;
+  isLoadingNewWord: boolean;
+  isDisabled: boolean;
 };
 
-export const GameAdmin = ({ handleSetWord, isLoading }: GameAdminProps) => {
+export const GameAdmin = ({ handleSetWord, isLoadingNewWord, isDisabled }: GameAdminProps) => {
   const [word, setWord] = useState<string>("");
 
   const handleOnButtonClick = () => {
@@ -22,14 +23,14 @@ export const GameAdmin = ({ handleSetWord, isLoading }: GameAdminProps) => {
         placeholder="Enter a 5 letter word..."
         value={word}
         onChange={e => setWord(e.target.value.toUpperCase())}
-        disabled={isLoading}
+        disabled={isDisabled}
         sx={{ width: "60%" }}
       />
       <Button
         onClick={handleOnButtonClick}
         color="neutral"
-        loading={isLoading}
-        disabled={isLoading || word.length !== 5}
+        loading={isLoadingNewWord}
+        disabled={isDisabled || word.length !== 5}
         sx={{ width: "40%" }}
       >
         Set New Word

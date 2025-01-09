@@ -3,30 +3,22 @@ import { useAccount, useReadContract, useReadContracts, useWaitForTransactionRec
 import { WordleGameABI } from "../abis/WordleGame.abi";
 import { WORDLE_GAME_ADDRESS } from "../config/constants";
 import { showToast } from "../utils/toast";
-import { useTokenContract } from "./useTokenContract";
 
 type UseGameContractProps = {
   guess: string;
+  refetchAllowance: () => void;
 };
 
-export const useGameContract = ({ guess }: UseGameContractProps) => {
+export const useGameContract = ({ guess, refetchAllowance }: UseGameContractProps) => {
   const [hash, setHash] = useState<`0x${string}` | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const { address: playerAddress } = useAccount();
   const { writeContractAsync } = useWriteContract();
-  const { refetchAllowance } = useTokenContract();
-
-  // Handle check admin address
-  const { data: adminAddress } = useReadContract({
-    abi: WordleGameABI,
-    address: WORDLE_GAME_ADDRESS,
-    functionName: "admin"
-  });
 
   // Handle check player guesses
   const {
-    data: getPlayerGuesses,
+    data: playerGuesses,
     refetch: refetchPlayerGuesses,
     isLoading: isLoadingPlayerGuesses
   } = useReadContract({
@@ -36,11 +28,11 @@ export const useGameContract = ({ guess }: UseGameContractProps) => {
     args: [playerAddress as `0x${string}`]
   }) as { data: string[]; refetch: () => void; isLoading: boolean };
 
-  const getPlayerGuessesArray: string[] = Array.isArray(getPlayerGuesses) ? getPlayerGuesses : [];
+  const playerGuessesArray: string[] = Array.isArray(playerGuesses) ? playerGuesses : [];
 
   // Handle check if player has guessed correctly
   const {
-    data: getHasPlayerGuessedCorrectly,
+    data: hasPlayerGuessedCorrectly,
     refetch: refetchHasPlayerGuessedCorrectly,
     isLoading: isLoadingHasPlayerGuessedCorrectly
   } = useReadContract({
@@ -51,9 +43,9 @@ export const useGameContract = ({ guess }: UseGameContractProps) => {
   }) as { data: boolean; refetch: () => void; isLoading: boolean };
 
   // Handle check letter statuses
-  const getLetterStatusesMap =
-    getPlayerGuessesArray.length > 0
-      ? Array.from({ length: getPlayerGuessesArray.length }).map(
+  const letterStatusesMap =
+    playerGuessesArray.length > 0
+      ? Array.from({ length: playerGuessesArray.length }).map(
           (_, index) =>
             ({
               abi: WordleGameABI,
@@ -65,40 +57,15 @@ export const useGameContract = ({ guess }: UseGameContractProps) => {
       : [];
 
   const {
-    data: getLetterStatusesData,
+    data: letterStatusesData,
     refetch: refetchLetterStatusesData,
     isLoading: isLoadingLetterStatusesData
   } = useReadContracts({
-    contracts: getLetterStatusesMap
+    contracts: letterStatusesMap
   });
 
-  const getLetterStatusesArray =
-    getLetterStatusesData?.map(item => (item.result ? { data: Array.from(item.result) } : { data: [] })) || [];
-
-  // Handle set new word by admin
-  const handleSetWord = async (newWord: string) => {
-    if (newWord.length !== 5) {
-      showToast("error", "Word must be 5 letters!");
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const response = await writeContractAsync({
-        address: WORDLE_GAME_ADDRESS,
-        abi: WordleGameABI,
-        functionName: "setWord",
-        args: [newWord]
-      });
-      setHash(response);
-      showToast("success", "Word set successfully!");
-    } catch (err: any) {
-      showToast("error", "Failed to set word. Please try again.");
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const letterStatusesArray =
+    letterStatusesData?.map(item => (item.result ? { data: Array.from(item.result) } : { data: [] })) || [];
 
   // Handle submit guess
   const handleSubmitGuess = async (allowance: number, onSuccess?: () => void) => {
@@ -108,10 +75,10 @@ export const useGameContract = ({ guess }: UseGameContractProps) => {
         case allowance <= 0:
           showToast("error", "You need allowance to play the game.");
           break;
-        case getHasPlayerGuessedCorrectly:
+        case hasPlayerGuessedCorrectly:
           showToast("error", "You have already guessed correctly!");
           break;
-        case Array.isArray(getPlayerGuesses) && getPlayerGuesses.length >= 5:
+        case Array.isArray(playerGuesses) && playerGuesses.length >= 5:
           showToast("error", "You already exceeded the limit play tries for today!");
           break;
         default:
@@ -148,12 +115,13 @@ export const useGameContract = ({ guess }: UseGameContractProps) => {
   }, [hasWaitedForGuess, refetchPlayerGuesses, refetchHasPlayerGuessedCorrectly, refetchLetterStatusesData]);
 
   return {
-    handleSetWord,
     handleSubmitGuess,
-    adminAddress,
-    getPlayerGuessesArray,
-    getLetterStatusesArray,
-    getHasPlayerGuessedCorrectly,
+    refetchPlayerGuesses,
+    refetchHasPlayerGuessedCorrectly,
+    refetchLetterStatusesData,
+    playerGuessesArray,
+    letterStatusesArray,
+    hasPlayerGuessedCorrectly,
     hasWaitedForGuess,
     isLoading: isLoading || isLoadingPlayerGuesses || isLoadingHasPlayerGuessedCorrectly || isLoadingLetterStatusesData
   };
