@@ -16,7 +16,13 @@ export const GamePage = () => {
 
   const { address: playerAddress } = useAccount();
   const { refetchBalance } = useMintTokens();
-  const { handleApproveTokens, refetchAllowance, allowance, isLoading: isLoadingToken } = useApproveTokens();
+  const {
+    handleApproveTokens,
+    refetchAllowance,
+    allowance,
+    hasAllowance,
+    isLoading: isLoadingToken
+  } = useApproveTokens();
   const {
     handleSubmitGuess,
     refetchPlayerGuesses,
@@ -25,8 +31,9 @@ export const GamePage = () => {
     playerGuessesArray,
     letterStatusesArray,
     hasPlayerGuessedCorrectly,
+    hasPlayerReachedGuessLimit,
     isLoading: isLoadingGame
-  } = usePlayGame({ guess, refetchBalance, refetchAllowance });
+  } = usePlayGame({ guess, setGuess, refetchBalance, refetchAllowance });
   const {
     handleSetWord,
     adminAddress,
@@ -44,6 +51,7 @@ export const GamePage = () => {
       <GameApprove
         handleApproveTokens={handleApproveTokens}
         allowance={allowance}
+        hasAllowance={hasAllowance}
         isLoadingToken={isLoadingToken}
         isDisabled={isDisabled}
       />
@@ -52,7 +60,9 @@ export const GamePage = () => {
         setGuess={setGuess}
         handleSubmitGuess={handleSubmitGuess}
         allowance={allowance}
+        hasAllowance={hasAllowance}
         hasPlayerGuessedCorrectly={hasPlayerGuessedCorrectly}
+        hasPlayerReachedGuessLimit={hasPlayerReachedGuessLimit}
         playerGuessesArray={playerGuessesArray}
         letterStatusesArray={letterStatusesArray}
         isLoadingGame={isLoadingGame}

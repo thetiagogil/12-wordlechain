@@ -44,26 +44,41 @@ export const useSetWord = ({
         args: [newWord]
       });
       setHash(response);
-      showToast("success", "Word set successfully!");
     } catch (err: any) {
       showToast("error", "Failed to set word. Please try again.");
       console.error(err);
-    } finally {
       setIsLoading(false);
     }
   };
 
   // Handle wait for make guess contract function receipt
-  const { isSuccess: hasWaitedForWord } = useWaitForTransactionReceipt({ hash });
+  const { isSuccess: hasWaitedForWord, isError: hasWaitError } = useWaitForTransactionReceipt({ hash });
 
-  // Trigger refetch after setWord contract function has waited
-  useEffect(() => {
-    if (hasWaitedForWord) {
-      refetchPlayerGuesses();
-      refetchHasPlayerGuessedCorrectly();
-      refetchLetterStatusesData();
+  // Handle refetch after setWord contract function has waited
+  const handleHasWaited = async () => {
+    if (!hash) {
+      return;
     }
-  }, [hasWaitedForWord, refetchPlayerGuesses, refetchHasPlayerGuessedCorrectly, refetchLetterStatusesData]);
+    if (hasWaitError) {
+      showToast("error", "Failed to set word. Please try again.");
+      setIsLoading(false);
+    }
+    if (hasWaitedForWord) {
+      try {
+        await Promise.all([refetchPlayerGuesses(), refetchHasPlayerGuessedCorrectly(), refetchLetterStatusesData()]);
+        showToast("success", "Word set successfully!");
+      } catch (err: any) {
+        console.error(err);
+        showToast("error", "Transaction failed while waiting for receipt.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    handleHasWaited();
+  }, [hasWaitedForWord, hasWaitError]);
 
   return {
     handleSetWord,
