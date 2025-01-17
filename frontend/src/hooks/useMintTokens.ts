@@ -38,20 +38,38 @@ export const useMintTokens = () => {
     } catch (err: any) {
       showToast("error", "Error minting tokens.");
       console.error(err);
-    } finally {
       setIsLoading(false);
     }
   };
 
   // Handle wait for mint tokens contract function receipt
-  const { isSuccess: hasWaitedForMint } = useWaitForTransactionReceipt({ hash });
+  const { isSuccess: hasWaitedForMint, isError: hasWaitError } = useWaitForTransactionReceipt({ hash });
 
-  // Update balance when the receipt is received
-  useEffect(() => {
-    if (hasWaitedForMint) {
-      refetchBalance();
+  // Handle refetch after approve contract function has waited
+  const handleHasWaited = async () => {
+    if (!hash) {
+      return;
     }
-  }, [hasWaitedForMint, refetchBalance]);
+    if (hasWaitError) {
+      showToast("error", "Error minting tokens.");
+      setIsLoading(false);
+    }
+    if (hasWaitedForMint) {
+      try {
+        await refetchBalance();
+        showToast("success", "Tokens minted successfully!");
+      } catch (err: any) {
+        console.error(err);
+        showToast("error", "Transaction failed while waiting for receipt.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    handleHasWaited();
+  }, [hasWaitedForMint, hasWaitError]);
 
   return {
     handleMintTokens,

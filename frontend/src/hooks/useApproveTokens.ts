@@ -22,6 +22,7 @@ export const useApproveTokens = () => {
   });
 
   const allowance = data ? Number(formatEther(data)) : 0;
+  const hasAllowance = allowance > 0;
 
   // Handle approve tokens
   const handleApproveTokens = async () => {
@@ -37,25 +38,44 @@ export const useApproveTokens = () => {
     } catch (err: any) {
       showToast("error", "Failed to approve tokens. Please try again.");
       console.error(err);
-    } finally {
       setIsLoading(false);
     }
   };
 
   // Handle wait for approve contract function receipt
-  const { isSuccess: hasWaitedForApprove } = useWaitForTransactionReceipt({ hash });
+  const { isSuccess: hasWaitedForApprove, isError: hasWaitError } = useWaitForTransactionReceipt({ hash });
 
-  // Trigger refetch after approve contract function has waited
-  useEffect(() => {
-    if (hasWaitedForApprove) {
-      refetchAllowance();
+  // Handle refetch after approve contract function has waited
+  const handleHasWaited = async () => {
+    if (!hash) {
+      return;
     }
-  }, [hasWaitedForApprove, refetchAllowance]);
+    if (hasWaitError) {
+      showToast("error", "Failed to approve tokens. Please try again.");
+      setIsLoading(false);
+    }
+    if (hasWaitedForApprove) {
+      try {
+        await refetchAllowance();
+        showToast("success", "Tokens approved successfully!");
+      } catch (err: any) {
+        console.error(err);
+        showToast("error", "Transaction failed while waiting for receipt.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    handleHasWaited();
+  }, [hasWaitedForApprove, hasWaitError]);
 
   return {
     handleApproveTokens,
     refetchAllowance,
     allowance,
+    hasAllowance,
     isLoading
   };
 };

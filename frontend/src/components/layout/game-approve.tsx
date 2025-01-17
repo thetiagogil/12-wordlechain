@@ -4,11 +4,18 @@ import { showToast } from "../../utils/toast";
 type GameApproveProps = {
   handleApproveTokens: () => void;
   allowance: number;
+  hasAllowance: boolean;
   isLoadingToken: boolean;
   isDisabled: boolean;
 };
 
-export const GameApprove = ({ handleApproveTokens, allowance, isLoadingToken, isDisabled }: GameApproveProps) => {
+export const GameApprove = ({
+  handleApproveTokens,
+  allowance,
+  hasAllowance,
+  isLoadingToken,
+  isDisabled
+}: GameApproveProps) => {
   const handleCheckAllowance = async () => {
     showToast("info", `Your allowance is: ${allowance} TKN.`);
   };
@@ -18,11 +25,11 @@ export const GameApprove = ({ handleApproveTokens, allowance, isLoadingToken, is
         fullWidth
         onClick={handleApproveTokens}
         color="success"
-        disabled={isDisabled || allowance > 0}
+        disabled={isDisabled || hasAllowance}
         loading={isLoadingToken}
         sx={{ bgcolor: "success.700" }}
       >
-        {allowance > 0 ? "Approved" : "Approve Tokens"}
+        {hasAllowance ? "Approved" : "Approve Tokens"}
       </Button>
       <Button fullWidth onClick={handleCheckAllowance} color="neutral" disabled={isDisabled}>
         Check Allowance

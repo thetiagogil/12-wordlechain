@@ -6,11 +6,12 @@ import { showToast } from "../utils/toast";
 
 type UseUsePlayGameProps = {
   guess: string;
+  setGuess: (string: string) => void;
   refetchBalance: () => void;
   refetchAllowance: () => void;
 };
 
-export const usePlayGame = ({ guess, refetchBalance, refetchAllowance }: UseUsePlayGameProps) => {
+export const usePlayGame = ({ guess, setGuess, refetchBalance, refetchAllowance }: UseUsePlayGameProps) => {
   const [hash, setHash] = useState<`0x${string}` | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -30,6 +31,7 @@ export const usePlayGame = ({ guess, refetchBalance, refetchAllowance }: UseUseP
     args: [playerAddress as `0x${string}`]
   }) as { data: string[]; refetch: () => void; isLoading: boolean };
 
+  const hasPlayerReachedGuessLimit = Array.isArray(playerGuesses) && playerGuesses.length >= 5;
   const playerGuessesArray: string[] = Array.isArray(playerGuesses) ? playerGuesses : [];
 
   // Handle check if player has guessed correctly
@@ -70,52 +72,63 @@ export const usePlayGame = ({ guess, refetchBalance, refetchAllowance }: UseUseP
     letterStatusesData?.map(item => (item.result ? { data: Array.from(item.result) } : { data: [] })) || [];
 
   // Handle submit guess
-  const handleSubmitGuess = async (allowance: number, onSuccess?: () => void) => {
+  const handleSubmitGuess = async (allowance: number) => {
+    if (allowance <= 0) return showToast("error", "You need allowance to play the game.");
+    if (hasPlayerGuessedCorrectly) return showToast("error", "You have already guessed correctly!");
+    if (hasPlayerReachedGuessLimit)
+      return showToast("error", "You already reached the limit play tries for this word!");
+
     setIsLoading(true);
     try {
-      switch (true) {
-        case allowance <= 0:
-          showToast("error", "You need allowance to play the game.");
-          break;
-        case hasPlayerGuessedCorrectly:
-          showToast("error", "You have already guessed correctly!");
-          break;
-        case Array.isArray(playerGuesses) && playerGuesses.length >= 5:
-          showToast("error", "You already exceeded the limit play tries for today!");
-          break;
-        default:
-          const response = await writeContractAsync({
-            address: gameAddress,
-            abi: WordleGameABI,
-            functionName: "makeGuess",
-            args: [guess]
-          });
-          setHash(response);
-          if (onSuccess) {
-            onSuccess();
-          }
-      }
+      const response = await writeContractAsync({
+        address: gameAddress,
+        abi: WordleGameABI,
+        functionName: "makeGuess",
+        args: [guess]
+      });
+      setHash(response);
     } catch (err: any) {
       showToast("error", "Failed to submit guess. Please try again.");
       console.error(err);
-    } finally {
       setIsLoading(false);
     }
   };
 
   // Handle wait for make guess contract function receipt
-  const { isSuccess: hasWaitedForGuess } = useWaitForTransactionReceipt({ hash });
+  const { isSuccess: hasWaitedForGuess, isError: hasWaitError } = useWaitForTransactionReceipt({ hash });
 
-  // Trigger refetch after makeGuess contract function has waited
-  useEffect(() => {
-    if (hasWaitedForGuess) {
-      refetchPlayerGuesses();
-      refetchHasPlayerGuessedCorrectly();
-      refetchLetterStatusesData();
-      refetchAllowance();
-      refetchBalance();
+  // Handle refetch after makeGuess contract function has waited
+  const handleHasWaited = async () => {
+    if (!hash) {
+      return;
     }
-  }, [hasWaitedForGuess, refetchPlayerGuesses, refetchHasPlayerGuessedCorrectly, refetchLetterStatusesData]);
+    if (hasWaitError) {
+      showToast("error", "Transaction failed while waiting for receipt.");
+      setIsLoading(false);
+      return;
+    }
+    if (hasWaitedForGuess) {
+      try {
+        setGuess("");
+        await Promise.all([
+          refetchPlayerGuesses(),
+          refetchHasPlayerGuessedCorrectly(),
+          refetchLetterStatusesData(),
+          refetchAllowance(),
+          refetchBalance()
+        ]);
+      } catch (err: any) {
+        console.error(err);
+        showToast("error", "Transaction failed while waiting for receipt.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    handleHasWaited();
+  }, [hasWaitedForGuess, hasWaitError]);
 
   return {
     handleSubmitGuess,
@@ -125,6 +138,7 @@ export const usePlayGame = ({ guess, refetchBalance, refetchAllowance }: UseUseP
     playerGuessesArray,
     letterStatusesArray,
     hasPlayerGuessedCorrectly,
+    hasPlayerReachedGuessLimit,
     hasWaitedForGuess,
     isLoading: isLoading || isLoadingPlayerGuesses || isLoadingHasPlayerGuessedCorrectly || isLoadingLetterStatusesData
   };
