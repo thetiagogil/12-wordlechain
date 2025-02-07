@@ -1,11 +1,19 @@
 import { extendTheme } from "@mui/joy/styles";
+import { colors } from "./colors";
+
+declare module "@mui/joy/styles" {
+  interface Palette {
+    main: typeof colors.main;
+  }
+}
 
 export const theme = extendTheme({
   colorSchemes: {
     dark: {
       palette: {
+        main: colors.main,
         background: {
-          body: "#121213"
+          body: colors.background
         }
       }
     }

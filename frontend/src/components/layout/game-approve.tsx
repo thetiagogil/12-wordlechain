@@ -1,4 +1,6 @@
 import { Button, Stack } from "@mui/joy";
+import { colors } from "../../theme/colors";
+import { getColorTransparency } from "../../utils/get-color-transparency";
 import { showToast } from "../../utils/toast";
 
 type GameApproveProps = {
@@ -24,10 +26,9 @@ export const GameApprove = ({
       <Button
         fullWidth
         onClick={handleApproveTokens}
-        color="success"
         disabled={isDisabled || hasAllowance}
         loading={isLoadingToken}
-        sx={{ bgcolor: "success.700" }}
+        sx={{ bgcolor: getColorTransparency(colors.main.green, 70), "&:hover": { bgcolor: "main.green" } }}
       >
         {hasAllowance ? "Approved" : "Approve Tokens"}
       </Button>

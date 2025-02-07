@@ -140,6 +140,7 @@ export const usePlayGame = ({ guess, setGuess, refetchBalance, refetchAllowance 
     hasPlayerGuessedCorrectly,
     hasPlayerReachedGuessLimit,
     hasWaitedForGuess,
-    isLoading: isLoading || isLoadingPlayerGuesses || isLoadingHasPlayerGuessedCorrectly || isLoadingLetterStatusesData
+    isLoadingWordSubmit: isLoading,
+    isLoadingWordStatus: isLoadingPlayerGuesses || isLoadingHasPlayerGuessedCorrectly || isLoadingLetterStatusesData
   };
 };

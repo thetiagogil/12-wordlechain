@@ -12,7 +12,7 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { WagmiProvider } from "wagmi";
 import { anvil, sepolia } from "wagmi/chains";
 import { ENV_VARS } from "./config/constants";
-import { theme } from "./utils/theme";
+import { theme } from "./theme/theme";
 
 const rainbowkitConfig = getDefaultConfig({
   appName: "Wordle",

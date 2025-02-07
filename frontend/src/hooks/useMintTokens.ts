@@ -21,8 +21,9 @@ export const useMintTokens = () => {
     args: playerAddress ? [playerAddress as `0x${string}`] : undefined
   });
 
-  const hasTokens = useMemo(() => {
-    return balanceData ? Number(formatEther(balanceData)) > 0 : false;
+  const balance = balanceData ? Number(formatEther(balanceData)) : 0;
+  const hasBalance = useMemo(() => {
+    return balanceData ? balanceData > 0 : false;
   }, [balanceData]);
 
   // Handle mint tokens
@@ -74,7 +75,8 @@ export const useMintTokens = () => {
   return {
     handleMintTokens,
     refetchBalance,
-    hasTokens,
+    balance,
+    hasBalance,
     isLoading
   };
 };

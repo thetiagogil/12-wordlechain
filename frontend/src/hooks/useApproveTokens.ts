@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { formatEther } from "viem";
 import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { WordleTokenABI } from "../abis/WordleToken.abi";
@@ -14,15 +14,17 @@ export const useApproveTokens = () => {
   const { writeContractAsync } = useWriteContract();
 
   // Handle check allowance
-  const { data, refetch: refetchAllowance } = useReadContract({
+  const { data: allowanceData, refetch: refetchAllowance } = useReadContract({
     abi: WordleTokenABI,
     address: tokenAddress,
     functionName: "allowance",
     args: [playerAddress as `0x${string}`, gameAddress]
   });
 
-  const allowance = data ? Number(formatEther(data)) : 0;
-  const hasAllowance = allowance > 0;
+  const allowance = allowanceData ? Number(formatEther(allowanceData)) : 0;
+  const hasAllowance = useMemo(() => {
+    return allowance ? allowance > 0 : false;
+  }, [allowance]);
 
   // Handle approve tokens
   const handleApproveTokens = async () => {

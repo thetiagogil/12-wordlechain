@@ -1,22 +1,34 @@
-import { Button } from "@mui/joy";
+import { Button, Stack } from "@mui/joy";
+import { colors } from "../../theme/colors";
+import { getColorTransparency } from "../../utils/get-color-transparency";
+import { showToast } from "../../utils/toast";
 
 type HomeMintProps = {
   handleMintTokens: () => void;
-  playerAddress?: `0x${string}`;
+  balance: number;
+  hasBalance: boolean;
   isMinting: boolean;
+  isDisabled: boolean;
 };
 
-export const MintButton = ({ handleMintTokens, playerAddress, isMinting }: HomeMintProps) => {
+export const MintButton = ({ handleMintTokens, balance, hasBalance, isMinting, isDisabled }: HomeMintProps) => {
+  const handleCheckAllowance = async () => {
+    showToast("info", `Your balance is: ${balance} TKN.`);
+  };
   return (
-    <Button
-      fullWidth
-      size="lg"
-      color="neutral"
-      onClick={handleMintTokens}
-      disabled={!playerAddress}
-      loading={isMinting}
-    >
-      Mint
-    </Button>
+    <Stack component="section" sx={{ flexDirection: "row", gap: 1, width: "100%" }}>
+      <Button
+        fullWidth
+        onClick={handleMintTokens}
+        disabled={isDisabled || hasBalance}
+        loading={isMinting}
+        sx={{ bgcolor: getColorTransparency(colors.main.purple, 70), "&:hover": { bgcolor: "main.purple" } }}
+      >
+        {hasBalance ? "Minted" : "Mint"}
+      </Button>
+      <Button fullWidth onClick={handleCheckAllowance} color="neutral" disabled={isDisabled}>
+        Check Balance
+      </Button>
+    </Stack>
   );
 };
