@@ -1,18 +1,17 @@
 import { Button, Stack } from "@mui/joy";
 import { useEffect, useMemo } from "react";
-import { LETTER_BG_COLORS } from "../../utils/colors";
+import { LETTER_BG_COLORS } from "../../utils/get-letter-bg-colors";
 
 type GameKeyboardProps = {
   guess: string;
   setGuess: (value: string | ((value: string) => string)) => void;
   handleSubmitGuess: (allowance: number) => void;
   allowance: number;
-  hasAllowance: boolean;
   hasPlayerGuessedCorrectly: boolean;
   hasPlayerReachedGuessLimit: boolean;
   playerGuessesArray: string[];
   letterStatusesArray: { data: number[] }[];
-  isLoadingGame: boolean;
+  isLoadingWordSubmit: boolean;
   isDisabled: boolean;
 };
 
@@ -21,12 +20,11 @@ export const GameKeyboard = ({
   setGuess,
   handleSubmitGuess,
   allowance,
-  hasAllowance,
   hasPlayerGuessedCorrectly,
   hasPlayerReachedGuessLimit,
   playerGuessesArray,
   letterStatusesArray,
-  isLoadingGame,
+  isLoadingWordSubmit,
   isDisabled
 }: GameKeyboardProps) => {
   const ROW1 = "QWERTYUIOP".split("");
@@ -34,7 +32,7 @@ export const GameKeyboard = ({
   const ROW3 = "ZXCVBNM".split("");
   const lettersSize = { width: { xs: 32, md: 40 }, height: 55, p: { xs: 1, sm: "auto" } };
   const actionsSize = { width: { xs: 52, md: 62 }, height: 55 };
-  const isKeyboardDisabled = isDisabled || !hasAllowance || hasPlayerGuessedCorrectly || hasPlayerReachedGuessLimit;
+  const isKeyboardDisabled = isDisabled || hasPlayerGuessedCorrectly || hasPlayerReachedGuessLimit;
 
   const handleOnLetterClick = (letter: string) => {
     if (guess.length < 5) setGuess(prev => prev + letter);
@@ -140,10 +138,10 @@ export const GameKeyboard = ({
         {ROW3.map(letter => letterButton(letter))}
         <Button
           onClick={handleOnGuessSubmit}
-          color="success"
+          color="neutral"
           disabled={isKeyboardDisabled || guess.length < 5}
-          loading={isLoadingGame}
-          sx={{ ...actionsSize, bgcolor: "success.700" }}
+          loading={isLoadingWordSubmit}
+          sx={{ ...actionsSize }}
         >
           Enter
         </Button>

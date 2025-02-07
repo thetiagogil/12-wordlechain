@@ -6,6 +6,7 @@ import { GameApprove } from "../components/layout/game-approve";
 import { GameGuess } from "../components/layout/game-guess";
 import { GameKeyboard } from "../components/layout/game-keyboard";
 import { MainContainer } from "../components/shared/container";
+import { MintButton } from "../components/shared/mint-button";
 import { useApproveTokens } from "../hooks/useApproveTokens";
 import { useMintTokens } from "../hooks/useMintTokens";
 import { usePlayGame } from "../hooks/usePlayGame";
@@ -14,8 +15,8 @@ import { useSetWord } from "../hooks/useSetWord";
 export const GamePage = () => {
   const [guess, setGuess] = useState<string>("");
 
-  const { address: playerAddress } = useAccount();
-  const { refetchBalance } = useMintTokens();
+  const { address: playerAddress, isConnected } = useAccount();
+  const { handleMintTokens, balance, hasBalance, isLoading: isMinting, refetchBalance } = useMintTokens();
   const {
     handleApproveTokens,
     refetchAllowance,
@@ -32,14 +33,15 @@ export const GamePage = () => {
     letterStatusesArray,
     hasPlayerGuessedCorrectly,
     hasPlayerReachedGuessLimit,
-    isLoading: isLoadingGame
+    isLoadingWordSubmit: isLoadingWordSubmit,
+    isLoadingWordStatus: isLoadingWordStatus
   } = usePlayGame({ guess, setGuess, refetchBalance, refetchAllowance });
   const {
     handleSetWord,
     adminAddress,
     isLoading: isLoadingNewWord
   } = useSetWord({ refetchPlayerGuesses, refetchHasPlayerGuessedCorrectly, refetchLetterStatusesData });
-  const isDisabled = isLoadingNewWord || isLoadingToken || isLoadingGame;
+  const isDisabled = !isConnected || isLoadingNewWord || isLoadingToken || isLoadingWordSubmit || isLoadingWordStatus;
 
   return (
     <MainContainer>
@@ -48,25 +50,31 @@ export const GamePage = () => {
       {playerAddress === adminAddress && (
         <GameAdmin handleSetWord={handleSetWord} isLoadingNewWord={isLoadingNewWord} isDisabled={isDisabled} />
       )}
+      <MintButton
+        handleMintTokens={handleMintTokens}
+        balance={balance}
+        hasBalance={hasBalance}
+        isMinting={isMinting}
+        isDisabled={isDisabled}
+      />
       <GameApprove
         handleApproveTokens={handleApproveTokens}
         allowance={allowance}
         hasAllowance={hasAllowance}
         isLoadingToken={isLoadingToken}
-        isDisabled={isDisabled}
+        isDisabled={isDisabled || !hasBalance}
       />
       <GameKeyboard
         guess={guess}
         setGuess={setGuess}
         handleSubmitGuess={handleSubmitGuess}
         allowance={allowance}
-        hasAllowance={hasAllowance}
         hasPlayerGuessedCorrectly={hasPlayerGuessedCorrectly}
         hasPlayerReachedGuessLimit={hasPlayerReachedGuessLimit}
         playerGuessesArray={playerGuessesArray}
         letterStatusesArray={letterStatusesArray}
-        isLoadingGame={isLoadingGame}
-        isDisabled={isDisabled}
+        isLoadingWordSubmit={isLoadingWordSubmit}
+        isDisabled={isDisabled || !hasBalance || !hasAllowance}
       />
     </MainContainer>
   );
