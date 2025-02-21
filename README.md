@@ -1,6 +1,6 @@
-# Wordle 3.0 - Blockchain Edition
+# Wordlechain
 
-Wordle 3.0 is a blockchain-based version of the classic Wordle game, built for Web3. Players use a custom ERC20 token to make guesses, combining blockchain technology with an interactive web interface.
+Wordlechain is a blockchain-based version of the classic Wordle game, built for Web3. Players use a custom ERC20 token to make guesses, combining blockchain technology with an interactive web interface.
 
 ## Table of Contents
 
